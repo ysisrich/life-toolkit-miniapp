@@ -1,0 +1,37 @@
+<view class="container">
+  <!-- 渐变背景光晕 -->
+  <view class="glow glow-1 {{isClippingDue ? 'glow-due' : ''}}"></view>
+  <view class="glow glow-2 {{isClippingDue ? 'glow-due' : ''}}"></view>
+
+  <custom-nav title="剪指甲打卡" back="{{true}}" placeholder="{{true}}"></custom-nav>
+
+  <view class="main-content">
+    <view class="status-circle {{isClippingDue ? 'due-circle' : ''}}" bindtap="onStatusTap">
+      <view class="circle-inner {{isClippingDue ? 'due' : ''}}">
+        <text class="days-text">{{daysRemaining}}</text>
+        <text class="days-label">天后需要修剪</text>
+      </view>
+    </view>
+    
+    <view class="action-btn glass-panel" bindtap="openSettings">
+      <text>周期设置 (当前: {{interval}}天)</text>
+    </view>
+  </view>
+
+  <apple-modal show="{{showModal}}" bind:close="onModalClose">
+    <view class="settings-content">
+      <view class="settings-header">
+        <text class="settings-title">提醒设置</text>
+      </view>
+      <view class="settings-body">
+        <view class="setting-item">
+          <text>修剪周期</text>
+          <picker mode="selector" range="{{intervals}}" value="{{intervalIndex}}" bindchange="onIntervalChange">
+            <view class="picker-value">{{intervals[intervalIndex]}} 天 ></view>
+          </picker>
+        </view>
+        <button class="reset-btn" bindtap="resetTimer">我刚刚剪了指甲</button>
+      </view>
+    </view>
+  </apple-modal>
+</view>

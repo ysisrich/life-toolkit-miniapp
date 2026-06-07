@@ -1,0 +1,78 @@
+var startY = 0;
+var currentY = 0;
+var isMoving = false;
+
+function touchstart(event, ownerInstance) {
+  var touch = event.touches[0] || event.changedTouches[0];
+  startY = touch.clientY;
+  isMoving = true;
+  // 移除 transition 以实现跟手
+  ownerInstance.selectComponent('.modal-wrapper').setStyle({
+    'transition': 'none'
+  });
+}
+
+function touchmove(event, ownerInstance) {
+  if (!isMoving) return;
+  var touch = event.touches[0] || event.changedTouches[0];
+  var deltaY = touch.clientY - startY;
+  
+  // 只允许向下滑动
+  if (deltaY > 0) {
+    currentY = deltaY;
+    ownerInstance.selectComponent('.modal-wrapper').setStyle({
+      'transform': 'translateY(' + deltaY + 'px)'
+    });
+  } else {
+    // 向上滑动加入极大的阻尼感
+    currentY = deltaY * 0.1;
+    ownerInstance.selectComponent('.modal-wrapper').setStyle({
+      'transform': 'translateY(' + currentY + 'px)'
+    });
+  }
+}
+
+function touchend(event, ownerInstance) {
+  isMoving = false;
+  // 恢复弹簧动画
+  ownerInstance.selectComponent('.modal-wrapper').setStyle({
+    'transition': 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)'
+  });
+  
+  if (currentY > 150) {
+    // 下滑超过阈值，关闭
+    ownerInstance.selectComponent('.modal-wrapper').setStyle({
+      'transform': 'translateY(100%)'
+    });
+    // 通知逻辑层关闭
+    ownerInstance.callMethod('onWxsClose');
+  } else {
+    // 回弹
+    ownerInstance.selectComponent('.modal-wrapper').setStyle({
+      'transform': 'translateY(0)'
+    });
+  }
+  currentY = 0;
+}
+
+function propObserver(newValue, oldValue, ownerInstance, instance) {
+  // 当 show 属性变化时，清除可能残留的 inline style
+  if (newValue) {
+    instance.setStyle({
+      'transform': 'translateY(0)',
+      'transition': 'transform 0.5s cubic-bezier(0.32, 0.72, 0, 1)'
+    });
+  } else {
+    instance.setStyle({
+      'transform': 'translateY(100%)',
+      'transition': 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)'
+    });
+  }
+}
+
+module.exports = {
+  touchstart: touchstart,
+  touchmove: touchmove,
+  touchend: touchend,
+  propObserver: propObserver
+};

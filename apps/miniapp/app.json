@@ -1,0 +1,28 @@
+{
+  "pages": [
+    "pages/hub/index",
+    "pages/settings/notification/index"
+  ],
+  "subPackages": [
+    {
+      "root": "pages/tools",
+      "name": "tools",
+      "pages": [
+        "nail-clipper/index",
+        "daily-report/index"
+      ]
+    }
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#000000",
+    "navigationBarTitleText": "工具库",
+    "navigationBarTextStyle": "white",
+    "navigationStyle": "custom"
+  },
+  "usingComponents": {
+    "custom-nav": "/components/custom-nav/index"
+  },
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

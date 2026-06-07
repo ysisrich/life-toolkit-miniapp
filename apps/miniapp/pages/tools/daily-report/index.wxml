@@ -1,0 +1,40 @@
+<view class="container">
+  <view class="glow glow-1 {{!isWritten ? 'glow-due' : ''}}"></view>
+  <view class="glow glow-2 {{!isWritten ? 'glow-due' : ''}}"></view>
+
+  <custom-nav title="写日报提醒" back="{{true}}" placeholder="{{true}}"></custom-nav>
+
+  <view class="main-content">
+    <view class="status-circle {{!isWritten ? 'due-circle' : ''}}" bindtap="recordReport">
+      <view class="circle-inner {{!isWritten ? 'due' : ''}}">
+        <text class="status-icon">{{isWritten ? '✓' : '!'}}</text>
+        <text class="status-text">{{isWritten ? '今日已打卡' : '今天还没写日报'}}</text>
+        <text class="days-label">{{isWritten ? '干得漂亮，准时下班！' : '点击这里记录打卡'}}</text>
+      </view>
+    </view>
+    
+    <view class="leave-btn" bindtap="recordLeave" wx:if="{{!isWritten}}">
+      <text>🏖️ 今天请假啦</text>
+    </view>
+    
+    <view class="action-btn glass-panel" bindtap="openSettings">
+      <text>提醒设置 (当前: {{reminderTime}})</text>
+    </view>
+  </view>
+
+  <apple-modal show="{{showModal}}" bind:close="onModalClose">
+    <view class="settings-content">
+      <view class="settings-header">
+        <text class="settings-title">提醒设置</text>
+      </view>
+      <view class="settings-body">
+        <view class="setting-item">
+          <text>每天提醒时间</text>
+          <picker mode="time" value="{{reminderTime}}" bindchange="onTimeChange">
+            <view class="picker-value">{{reminderTime}} ></view>
+          </picker>
+        </view>
+      </view>
+    </view>
+  </apple-modal>
+</view>

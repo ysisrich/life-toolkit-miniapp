@@ -1,0 +1,19 @@
+{
+  "name": "life-toolkit-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:api": "pnpm --filter api-server run start:dev",
+    "install:all": "pnpm install"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "sqlite3"
+    ]
+  },
+  "volta": {
+    "node": "20.20.2",
+    "pnpm": "10.34.1"
+  }
+}

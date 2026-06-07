@@ -1,0 +1,34 @@
+<view class="container">
+  <!-- 自定义导航栏 -->
+  <custom-nav title="生活工具箱" back="{{false}}" placeholder="{{true}}"></custom-nav>
+
+
+
+  <view class="header">
+    <view class="greeting-wrapper">
+      <text class="greeting">{{greeting}}</text>
+      <text class="date-text">{{dateString}}</text>
+    </view>
+    <view class="nav-settings" bindtap="onSettingsTap">
+      <view class="settings-icon"></view>
+    </view>
+  </view>
+
+  <!-- GSAP 动画控制的网格布局 -->
+  <view class="grid-wrapper">
+    <view 
+      class="grid-item" 
+      wx:for="{{tools}}" 
+      wx:key="id" 
+      bindtap="onCardTap" 
+      data-path="{{item.path}}"
+      style="transform: translateY({{iconsAnimState[index].y}}px) scale({{iconsAnimState[index].scale}}); opacity: {{iconsAnimState[index].opacity}};"
+    >
+      <view class="icon-box glass-panel">
+        <view class="icon-bg" style="background: {{item.gradient}}"></view>
+        <image class="tool-icon" src="{{item.icon}}" mode="aspectFit"></image>
+      </view>
+      <text class="tool-name">{{item.name}}</text>
+    </view>
+  </view>
+</view>

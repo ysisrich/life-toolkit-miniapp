@@ -1,0 +1,36 @@
+<view class="container">
+  <custom-nav title="通知设置" back="{{true}}" placeholder="{{true}}"></custom-nav>
+
+  <view class="content">
+    <view class="header">
+      <text class="title">Bark 消息推送</text>
+      <text class="subtitle">配置后，小工具可以通过 Bark 向你的 iOS 设备发送实时通知消息。</text>
+    </view>
+
+    <view class="form-group glass-panel">
+      <view class="input-item">
+        <text class="label">服务器地址</text>
+        <input class="input" value="{{server}}" bindinput="onServerInput" placeholder="默认: https://api.day.app" placeholder-class="input-placeholder"/>
+      </view>
+      
+      <view class="divider"></view>
+      
+      <view class="input-item">
+        <text class="label">Bark Key</text>
+        <input class="input" value="{{key}}" bindinput="onKeyInput" placeholder="请输入你的 Bark Key" placeholder-class="input-placeholder"/>
+      </view>
+    </view>
+
+    <view class="action-group">
+      <button class="btn btn-primary" bindtap="onSaveConfig">保存配置</button>
+      <button class="btn btn-secondary" bindtap="onTestPush">测试发送</button>
+    </view>
+    
+    <view class="help-text">
+      <view>如何在 iPhone 上使用 Bark？</view>
+      <view>1. 在 App Store 搜索并下载 "Bark"</view>
+      <view>2. 打开 App，复制给你的专属 Key</view>
+      <view>3. 将 Key 粘贴到上方输入框</view>
+    </view>
+  </view>
+</view>

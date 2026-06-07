@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "写日报提醒",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "apple-modal": "../../../components/apple-modal/index"
+  }
+}

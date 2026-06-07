@@ -1,0 +1,15 @@
+<view class="custom-nav-container" style="height: {{navBarHeight}}px; background: {{background}};">
+  <view class="nav-content" style="top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px;">
+    
+    <view class="nav-back" bindtap="goBack" wx:if="{{back}}">
+      <text class="back-icon">‹</text>
+      <text class="back-text">返回</text>
+    </view>
+    
+    <view class="nav-title" style="line-height: {{menuButtonHeight}}px;">
+      {{title}}
+    </view>
+
+  </view>
+</view>
+<view class="nav-placeholder" wx:if="{{placeholder}}" style="height: {{navBarHeight}}px;"></view>

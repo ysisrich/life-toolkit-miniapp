@@ -1,0 +1,42 @@
+/* 全局设计变量与 CSS Reset */
+page {
+  /* 极致色彩体系：深色模式基底 */
+  --bg-color: #000000;
+  --card-bg: rgba(28, 28, 30, 0.7); /* iOS 深色毛玻璃背景 */
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(235, 235, 245, 0.6);
+  --accent-color: #0A84FF; /* iOS 蓝 */
+  
+  /* 阴影体系 */
+  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.6);
+
+  /* 全局字体：更现代的无衬线 */
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-size: 16px;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 隐藏默认滚动条 */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  color: transparent;
+}
+
+view, text, image, scroll-view {
+  box-sizing: border-box;
+}
+
+/* 玻璃拟物化基础类 (Glassmorphism Utilities) */
+.glass-panel {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 0.5px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
+}

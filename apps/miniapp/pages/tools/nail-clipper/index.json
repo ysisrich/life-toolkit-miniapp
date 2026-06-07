@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "剪指甲提醒",
+  "navigationBarBackgroundColor": "#000000",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "apple-modal": "../../../components/apple-modal/index"
+  }
+}

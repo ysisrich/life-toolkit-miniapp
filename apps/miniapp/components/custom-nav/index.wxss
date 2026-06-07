@@ -1,0 +1,49 @@
+.custom-nav-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+}
+
+.nav-content {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.nav-back {
+  position: absolute;
+  left: 30rpx;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+
+.back-icon {
+  font-size: 60rpx;
+  color: #fff;
+  line-height: 1;
+  margin-top: -6rpx;
+}
+
+.back-text {
+  font-size: 34rpx;
+  color: #fff;
+  margin-left: 6rpx;
+}
+
+.nav-title {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: 500;
+  color: #fff;
+  z-index: 1;
+  pointer-events: none;
+}

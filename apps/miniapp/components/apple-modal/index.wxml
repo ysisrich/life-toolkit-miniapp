@@ -1,0 +1,19 @@
+<wxs module="gesture" src="./modal.wxs"></wxs>
+
+<view class="modal-backdrop {{show ? 'show' : ''}}" bindtap="close"></view>
+
+<view 
+  class="modal-wrapper {{show ? 'show' : ''}}"
+  change:prop="{{gesture.propObserver}}"
+  prop="{{show}}"
+  bindtouchstart="{{gesture.touchstart}}"
+  bindtouchmove="{{gesture.touchmove}}"
+  bindtouchend="{{gesture.touchend}}"
+>
+  <view class="modal-handle">
+    <view class="handle-bar"></view>
+  </view>
+  <view class="modal-content">
+    <slot></slot>
+  </view>
+</view>

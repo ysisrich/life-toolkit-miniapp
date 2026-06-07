@@ -1,0 +1,177 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  /* 炫酷的深色背景底图，可以用模糊的光斑代替 */
+  background: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #000000 100%);
+}
+
+.custom-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  padding-left: 40rpx;
+}
+
+.nav-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+  color: var(--text-primary);
+}
+
+.header {
+  padding: 80rpx 40rpx 80rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12rpx;
+}
+
+.greeting-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.greeting {
+  display: inline-block;
+  font-size: 68rpx;
+  font-weight: 800;
+  background: linear-gradient(-60deg, #a0a0a0 30%, #ffffff 50%, #a0a0a0 70%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+  text-align: center;
+  letter-spacing: 4rpx;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: 300% center;
+  }
+}
+
+
+.subtitle {
+  font-size: 30rpx;
+  color: var(--text-secondary);
+  display: block;
+  margin-top: 20rpx;
+}
+
+.date-text {
+  display: inline-block;
+  font-size: 24rpx;
+  color: var(--text-secondary, #8E8E93);
+  margin-top: 24rpx;
+  font-weight: 500;
+  padding: 8rpx 24rpx;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 30rpx;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  letter-spacing: 2rpx;
+}
+
+/* 一行三个的网格布局 */
+.grid-wrapper {
+  padding: 0 40rpx;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 60rpx 40rpx; /* 上下间距 60，左右间距 40 */
+  padding-bottom: 100rpx;
+}
+
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* GSAP 会通过 style 覆盖这里的初始值，但也可以写个防闪烁默认值 */
+  opacity: 0; 
+}
+
+.grid-item:active .icon-box {
+  transform: scale(0.92);
+  filter: brightness(0.8);
+}
+
+.icon-box {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 40rpx; /* iOS 风格的圆角 */
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20rpx;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 2px rgba(255, 255, 255, 0.3);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.icon-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.tool-icon {
+  width: 70rpx;
+  height: 70rpx;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+}
+
+.tool-name {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-align: center;
+  /* 允许文字换行但最多两行 */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.nav-settings {
+  position: absolute;
+  right: 40rpx;
+  top: 90rpx;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.settings-icon {
+  width: 44rpx;
+  height: 44rpx;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'></circle><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'></path></svg>");
+  background-size: cover;
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
+
+.nav-settings:active .settings-icon {
+  opacity: 0.5;
+}

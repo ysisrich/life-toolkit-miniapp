@@ -1,0 +1,45 @@
+# IDE & OS
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# Node.js & pnpm
+node_modules/
+dist/
+build/
+coverage/
+.npm
+.pnpm-store
+
+# NestJS / API Server
+apps/api-server/database.sqlite
+apps/api-server/dist/
+apps/api-server/node_modules/
+.env
+.env.*
+!.env.example
+
+# 微信小程序 (Mini Program)
+project.private.config.json
+*.wxss.map
+apps/miniapp/miniprogram_npm/
+apps/miniapp/node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Monorepo artifacts
+.turbo/
+*.db
+.agent/
