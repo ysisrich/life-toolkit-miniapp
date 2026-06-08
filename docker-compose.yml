@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  api-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: life-toolkit-api
+    restart: always
+    ports:
+      - "3456:3456"
+    volumes:
+      # 挂载后端环境变量配置文件
+      - ./apps/api-server/.env:/app/apps/api-server/.env
+      # 挂载 SQLite 数据库文件到宿主机的 data 目录，防止数据丢失（必须先手动在宿主机 touch ./data/database.sqlite 创建空文件，否则会被当成文件夹挂载）
+      - ./data/database.sqlite:/app/apps/api-server/database.sqlite
+      # 挂载日志目录，方便在宿主机直接查看自动轮转的日志
+      - ./data/logs:/app/apps/api-server/logs
+    environment:
+      - NODE_ENV=production
+      - TZ=Asia/Shanghai

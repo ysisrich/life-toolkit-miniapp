@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -10,6 +10,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { User } from './users.entity';
 import { UserSetting } from './user-settings.entity';
 import { TaskRecord } from './task-record.entity';
+import { LoggerMiddleware } from './logger/logger.middleware';
 
 @Module({
   imports: [
@@ -30,4 +31,8 @@ import { TaskRecord } from './task-record.entity';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

@@ -1,3 +1,7 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+allowBuilds:
+  '@nestjs/core': false
+  sqlite3: false
+  unrs-resolver: false

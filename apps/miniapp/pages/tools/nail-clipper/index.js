@@ -1,5 +1,6 @@
 import { getToolSettings, updateToolSettings } from '../../../api/settings';
 import dayjs from 'dayjs';
+import config from '../../../config';
 
 Page({
   data: {
@@ -77,7 +78,7 @@ Page({
     
     // 提醒订阅消息
     wx.requestSubscribeMessage({
-      tmplIds: ['6WenYg7uUYcdPWSbDhrmJxObtAK5NQ3ATmATA_F1k3U'],
+      tmplIds: [config.SUBSCRIBE_TEMPLATE_ID],
       complete: async () => {
         try {
           await updateToolSettings('nail-clipper', {
@@ -98,7 +99,7 @@ Page({
     this.lastDate = nowStr;
     
     wx.requestSubscribeMessage({
-      tmplIds: ['6WenYg7uUYcdPWSbDhrmJxObtAK5NQ3ATmATA_F1k3U'],
+      tmplIds: [config.SUBSCRIBE_TEMPLATE_ID],
       complete: async () => {
         try {
           await updateToolSettings('nail-clipper', {

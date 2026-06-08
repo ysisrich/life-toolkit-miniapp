@@ -1,0 +1,15 @@
+node_modules
+apps/*/node_modules
+apps/*/dist
+packages/*/node_modules
+packages/*/dist
+npm-debug.log*
+.git
+.gitignore
+.env
+apps/api-server/.env
+data/
+logs/
+database.sqlite
+apps/api-server/database.sqlite
+apps/api-server/logs/

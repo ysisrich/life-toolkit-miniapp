@@ -1,6 +1,7 @@
 import { getToolSettings, updateToolSettings } from '../../../api/settings';
 import { getTasks, recordTask } from '../../../api/tasks';
 import dayjs from 'dayjs';
+import config from '../../../config';
 
 Page({
   data: {
@@ -54,7 +55,7 @@ Page({
     }
 
     wx.requestSubscribeMessage({
-      tmplIds: ['6WenYg7uUYcdPWSbDhrmJxObtAK5NQ3ATmATA_F1k3U'],
+      tmplIds: [config.SUBSCRIBE_TEMPLATE_ID],
       complete: async () => {
         try {
           await recordTask('daily-report', { note: '完成写日报打卡' });
@@ -102,7 +103,7 @@ Page({
     this.setData({ reminderTime: time });
     
     wx.requestSubscribeMessage({
-      tmplIds: ['6WenYg7uUYcdPWSbDhrmJxObtAK5NQ3ATmATA_F1k3U'],
+      tmplIds: [config.SUBSCRIBE_TEMPLATE_ID],
       complete: async () => {
         try {
           await updateToolSettings('daily-report', {

@@ -40,7 +40,7 @@ pnpm install
 ```bash
 pnpm run dev:api
 ```
-此时 API 服务器将监听 `http://localhost:3000` 并在后端目录自动生成 `database.sqlite` 数据库文件。
+此时 API 服务器将监听 `http://localhost:3456` 并在后端目录自动生成 `database.sqlite` 数据库文件。
 
 ### 3. 运行微信小程序客户端
 打开 **微信开发者工具**，将项目目录指定为本仓库下的 `apps/miniapp/` 文件夹。

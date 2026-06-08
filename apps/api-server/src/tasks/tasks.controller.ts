@@ -75,7 +75,7 @@ export class TasksController {
       try {
         await this.wechatService.sendSubscribeMessage(
           setting.user.openId,
-          '6WenYg7uUYcdPWSbDhrmJxObtAK5NQ3ATmATA_F1k3U',
+          process.env.WECHAT_SUBSCRIBE_TEMPLATE_ID!,
           templateData,
           'pages/tools/nail-clipper/index'
         );

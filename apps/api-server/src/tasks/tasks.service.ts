@@ -52,7 +52,7 @@ export class TasksService {
 
           await this.wechatService.sendSubscribeMessage(
             setting.user.openId,
-            '6WenYg7uUYcdPWSbDhrmJxObtAK5NQ3ATmATA_F1k3U',
+            process.env.WECHAT_SUBSCRIBE_TEMPLATE_ID!,
             templateData,
             'pages/tools/nail-clipper/index'
           );
@@ -142,14 +142,14 @@ export class TasksService {
         const templateData = {
           thing1: { value: '写日报' },
           thing5: { value: '打工人' },
-          time4: { value: '尚未打卡' },
+          time4: { value: formatDate(reminderDateObj) },
           time6: { value: formatDate(nowObj) },
           thing3: { value: '快下班啦，别忘了写日报哦！' }
         };
 
         await this.wechatService.sendSubscribeMessage(
           setting.user.openId,
-          '6WenYg7uUYcdPWSbDhrmJxObtAK5NQ3ATmATA_F1k3U',
+          process.env.WECHAT_SUBSCRIBE_TEMPLATE_ID!,
           templateData,
           'pages/tools/daily-report/index'
         );
