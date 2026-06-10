@@ -61,6 +61,7 @@ export class TasksService {
       } catch (err) {
         this.logger.error(`Error processing nail clipper reminder for user ${setting.userId}`, err);
       }
+    }
     this.logger.log(`Nail clipper reminders finished. Sent: ${sentCount}`);
   }
 
@@ -183,12 +184,24 @@ export class TasksService {
         // If not wrote, check if we already PUSHED a reminder today to avoid spamming every 5 min
         if (data.lastPushedDate === nowObj.format('YYYY-MM-DD')) continue;
 
-        // Send reminder
+        // 如果还没打卡，获取最后一次的打卡记录作为“上次打卡时间”
+        const lastRecord = await this.taskRecordRepository.findOne({
+          where: { userId: setting.userId, toolKey: 'daily-report' },
+          order: { createdAt: 'DESC' }
+        });
+
         const formatDate = (dateObj: dayjs.Dayjs) => dateObj.format('YYYY-MM-DD HH:mm:ss');
+
+        // 微信模板要求 time 类型必须是标准时间格式，如果没有记录，默认显示昨天
+        const lastPunchTimeStr = lastRecord 
+          ? formatDate(dayjs(lastRecord.createdAt)) 
+          : formatDate(reminderDateObj.subtract(1, 'day'));
+
+        // Send reminder
         const templateData = {
           thing1: { value: '写日报' },
           thing5: { value: '打工人' },
-          time4: { value: formatDate(reminderDateObj) },
+          time4: { value: lastPunchTimeStr },
           time6: { value: formatDate(nowObj) },
           thing3: { value: '下班啦，别忘了写日报哦！' }
         };
