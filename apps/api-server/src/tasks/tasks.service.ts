@@ -17,15 +17,15 @@ export class TasksService {
     @InjectRepository(TaskRecord)
     private taskRecordRepository: Repository<TaskRecord>,
     private wechatService: WechatService,
-  ) {}
+  ) { }
 
   @Cron('0 9 * * *')
   async handleNailClipperReminders() {
     this.logger.log('Start checking nail clipper reminders...');
-    
-    const settings = await this.settingsRepository.find({ 
+
+    const settings = await this.settingsRepository.find({
       where: { toolKey: 'nail-clipper' },
-      relations: ['user'] 
+      relations: ['user']
     });
 
     let sentCount = 0;
@@ -39,7 +39,7 @@ export class TasksService {
         const lastDateObj = dayjs(data.lastDate);
         const nowObj = dayjs();
         const diffDays = nowObj.diff(lastDateObj, 'day', true);
-        
+
         if (diffDays >= data.interval) {
           const formatDate = (dateObj: dayjs.Dayjs) => dateObj.format('YYYY-MM-DD HH:mm:ss');
           const templateData = {
@@ -61,8 +61,54 @@ export class TasksService {
       } catch (err) {
         this.logger.error(`Error processing nail clipper reminder for user ${setting.userId}`, err);
       }
-    }
     this.logger.log(`Nail clipper reminders finished. Sent: ${sentCount}`);
+  }
+
+  @Cron('0 10 * * *')
+  async handleHaircutReminders() {
+    this.logger.log('Start checking haircut reminders...');
+
+    const settings = await this.settingsRepository.find({
+      where: { toolKey: 'haircut' },
+      relations: ['user']
+    });
+
+    let sentCount = 0;
+
+    for (const setting of settings) {
+      if (!setting.user || !setting.user.openId) continue;
+      try {
+        const data = JSON.parse(setting.settingData || '{}');
+        if (!data.lastDate || !data.interval) continue;
+
+        const lastDateObj = dayjs(data.lastDate);
+        const nowObj = dayjs();
+        const diffDays = nowObj.diff(lastDateObj, 'day', true);
+
+        if (diffDays >= data.interval) {
+          const formatDate = (dateObj: dayjs.Dayjs) => dateObj.format('YYYY-MM-DD HH:mm:ss');
+          const genderTitle = data.gender === 'girl' ? '小仙女' : '帅哥';
+          const templateData = {
+            thing1: { value: '去理发' },
+            thing5: { value: genderTitle },
+            time4: { value: formatDate(lastDateObj) },
+            time6: { value: formatDate(nowObj) },
+            thing3: { value: '头发有点长啦，记得抽空去理个发哦~' }
+          };
+
+          await this.wechatService.sendSubscribeMessage(
+            setting.user.openId,
+            process.env.WECHAT_SUBSCRIBE_TEMPLATE_ID!,
+            templateData,
+            'pages/tools/haircut/index'
+          );
+          sentCount++;
+        }
+      } catch (err) {
+        this.logger.error(`Error processing haircut reminder for user ${setting.userId}`, err);
+      }
+    }
+    this.logger.log(`Haircut reminders finished. Sent: ${sentCount}`);
   }
 
   async checkIsWorkday(dateObj: dayjs.Dayjs): Promise<boolean> {
@@ -79,7 +125,7 @@ export class TasksService {
     } catch (e) {
       this.logger.warn(`Failed to fetch holiday API, using fallback. Error: ${e.message}`);
     }
-    
+
     // Fallback: Monday to Friday
     const day = dateObj.day();
     return day >= 1 && day <= 5;
@@ -89,14 +135,14 @@ export class TasksService {
   @Cron('* * * * *')
   async handleDailyReportReminders() {
     this.logger.log('Start checking daily report reminders...');
-    
-    const settings = await this.settingsRepository.find({ 
+
+    const settings = await this.settingsRepository.find({
       where: { toolKey: 'daily-report' },
-      relations: ['user'] 
+      relations: ['user']
     });
 
     const nowObj = dayjs();
-    
+
     // First, check if today is a workday. If not, skip completely.
     const isWorkday = await this.checkIsWorkday(nowObj);
     if (!isWorkday) {
@@ -144,7 +190,7 @@ export class TasksService {
           thing5: { value: '打工人' },
           time4: { value: formatDate(reminderDateObj) },
           time6: { value: formatDate(nowObj) },
-          thing3: { value: '快下班啦，别忘了写日报哦！' }
+          thing3: { value: '下班啦，别忘了写日报哦！' }
         };
 
         await this.wechatService.sendSubscribeMessage(
@@ -158,13 +204,13 @@ export class TasksService {
         data.lastPushedDate = nowObj.format('YYYY-MM-DD');
         setting.settingData = JSON.stringify(data);
         await this.settingsRepository.save(setting);
-        
+
         sentCount++;
       } catch (err) {
         this.logger.error(`Error processing daily report reminder for user ${setting.userId}`, err);
       }
     }
-    
+
     if (sentCount > 0) {
       this.logger.log(`Daily report reminders finished. Sent: ${sentCount}`);
     }

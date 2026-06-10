@@ -42,6 +42,16 @@
   padding: 30rpx 0;
 }
 
+.switch-item {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.switch-item .label {
+  margin-bottom: 0;
+}
+
 .label {
   font-size: 24rpx;
   color: var(--text-secondary);

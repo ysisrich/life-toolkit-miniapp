@@ -1,6 +1,9 @@
 import { tokenManager } from './token';
 
-const API_BASE_URL = 'http://localhost:3456';
+const envVersion = wx.getAccountInfoSync().miniProgram.envVersion;
+const API_BASE_URL = envVersion === 'develop' 
+  ? 'http://localhost:3456' 
+  : 'https://life-toolkit-api.6ys.tech';
 
 /**
  * 企业级封装的 Request 核心类
@@ -11,7 +14,7 @@ class Request {
     this.timeout = 10000;
     this.isRefreshing = false; // 是否正在静默刷新 token
     this.retryRequests = []; // 因 token 失效而等待重试的请求队列
-    
+
     // 简易拦截器
     this.interceptors = {
       request: {
@@ -132,7 +135,7 @@ class Request {
     }
 
     this.isRefreshing = true;
-    
+
     getApp().login()
       .then(() => {
         // 刷新成功，依次执行挂起的请求队列

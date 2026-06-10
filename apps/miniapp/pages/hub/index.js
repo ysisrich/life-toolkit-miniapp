@@ -1,4 +1,5 @@
 import { gsap } from 'gsap';
+import notification from '../../utils/notification';
 
 const app = getApp();
 
@@ -23,6 +24,13 @@ Page({
         icon: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>',
         gradient: 'linear-gradient(135deg, rgba(255, 159, 10, 0.6) 0%, #000 100%)',
         path: '/pages/tools/daily-report/index'
+      },
+      {
+        id: 'haircut',
+        name: '去理发',
+        icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik02LDE4QzQuOSwxOCA0LDE4LjkgNCwyMEM0LDIxLjEgNC45LDIyIDYsMjJDNy4xLDIyIDgsMjEuMSA4LDIwQzgsMTkuNzggNy45NiwxOS41NyA3Ljg5LDE5LjM4TDEwLjk3LDE2LjNDMTEuMzYsMTYuNDIgMTEuNzgsMTYuNDIgMTIuMTYsMTYuM0wxNS4xMSwxOS4zOEMxNS4wNCwxOS41NyAxNSwxOS43OCAxNSwyMEMxNSwyMS4xIDE1LjksMjIgMTcsMjJDMTguMSwyMiAxOSwyMS4xIDE5LDIwQzE5LDE4LjkgMTguMSwxOCAxNywxOEMxNS45LDE4IDE1LDE4LjkgMTUsMjBDMTUsMjAuMjIgMTUuMDQsMjAuNDMgMTUuMTEsMjAuNjJMMTIuMTYsMTcuN0MxMS43OCwxNy44MiAxMS4zNiwxNy44MiAxMC45NywxNy43TDcuODksMjAuNjJDNy45NiwyMC40MyA4LDIwLjIyIDgsMjBDOCwxOC45IDcuMSwxOCA2LDE4TTYsMTZDNy4xLDE2IDgsMTUuMSA4LDE0QzgsMTMuNzggNy45NiwxMy41NyA3Ljg5LDEzLjM4TDEyLDkuMjdMMTYuMTEsMTMuMzhDMTYuMDQsMTMuNTcgMTYsMTMuNzggMTYsMTRDMTYsMTUuMSAxNi45LDE2IDE4LDE2QzE5LjEsMTYgMjAsMTUuMSAyMCwxNEMyMCwxMi45IDE5LjEsMTIgMTgsMTJDMTYuOSwxMiAxNiwxMi45IDE2LDE0QzE2LDE0LjIyIDE2LjA0LDE0LjQzIDE2LjExLDE0LjYyTDEyLDEwLjUxTDcuODksMTQuNjJDNy45NiwxNC40MyA4LDE0LjIyIDgsMTRDOCwxMi45IDcuMSwxMiA2LDEyQzQuOSwxMiA0LDEyLjkgNCwxNEM0LDE1LjEgNC45LDE2IDYsMTZNMTIsOC41QzEyLjM4LDguNSAxMi43NSw4LjM1IDEzLjA2LDguMDRDMTMuNjUsNy40NSAxMy42NSw2LjUgMTMuMDYsNS45MUw5LjE3LDJINy4wNUwxMiw2Ljk1QzEyLDYuOTUgMTIsOC41IDEyLDguNU0xMiw4LjVDMTEuNjIsOC41IDExLjI1LDguMzUgMTAuOTQsOC4wNEMxMC4zNSw3LjQ1IDEwLjM1LDYuNSAxMC45NCw1LjkxTDE0LjgzLDJIMTYuOTVMMTIsNi45NUMxMiw2Ljk1IDEyLDguNSAxMiw4LjVaIi8+PC9zdmc+',
+        gradient: 'linear-gradient(135deg, rgba(175, 82, 222, 0.6) 0%, #000 100%)',
+        path: '/pages/tools/haircut/index'
       },
       // 增加几个占位图标，为了演示网格错开动画效果
       {
@@ -86,39 +94,45 @@ Page({
     this.setData({
       iconsAnimState: initialState
     }, () => {
-      // 在 setData 回调中执行，确保视图层已经重置完毕再开始动画，避免闪烁
-      const animTargets = initialState.map(item => ({ ...item }));
-      
-      gsap.to(animTargets, {
-        y: 0,
-        scale: 1,
-        opacity: 1,
-        duration: 0.8,
-        stagger: 0.1, // 错开入场
-        ease: "elastic.out(1, 0.6)",
-        onUpdate: () => {
-          const safeStates = animTargets.map(t => ({
-            y: t.y,
-            scale: t.scale,
-            opacity: t.opacity
-          }));
+      // 在 setData 回调中执行，为了确保首次加载时视图层真正渲染完毕，加个短延迟
+      setTimeout(() => {
+        const animTargets = initialState.map(item => ({ ...item }));
+        
+        gsap.to(animTargets, {
+          y: 0,
+          scale: 1,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.1, // 错开入场
+          ease: "elastic.out(1, 0.6)",
+          onUpdate: () => {
+            const safeStates = animTargets.map(t => ({
+              y: t.y,
+              scale: t.scale,
+              opacity: t.opacity
+            }));
 
-          this.setData({
-            iconsAnimState: safeStates
-          });
-        }
-      });
+            this.setData({
+              iconsAnimState: safeStates
+            });
+          }
+        });
+      }, 150); // 150ms 延迟，等大框架先画出来
     });
   },
 
   onSettingsTap() {
     wx.navigateTo({
-      url: '/pages/settings/notification/index'
+      url: '/pages/settings/home/index'
     });
   },
 
   onCardTap(e) {
     const path = e.currentTarget.dataset.path;
+
+    // 默默尝试增加一次订阅
+    notification.silentAccumulateSubscription();
+
     if (path) {
       wx.navigateTo({
         url: path

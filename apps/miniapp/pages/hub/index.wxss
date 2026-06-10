@@ -3,8 +3,63 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  /* 炫酷的深色背景底图，可以用模糊的光斑代替 */
-  background: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #000000 100%);
+}
+
+/* 动态背景层 */
+.bg-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #000000;
+}
+
+.bg-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.6;
+  animation: blob-float 15s infinite alternate ease-in-out;
+}
+
+.blob-1 {
+  top: -10%;
+  left: -20%;
+  width: 600rpx;
+  height: 600rpx;
+  background: rgba(94, 92, 230, 0.35); /* 优雅紫 */
+  animation-delay: 0s;
+}
+
+.blob-2 {
+  top: 40%;
+  right: -20%;
+  width: 700rpx;
+  height: 700rpx;
+  background: rgba(10, 132, 255, 0.25); /* 科技蓝 */
+  animation-duration: 22s;
+  animation-delay: -5s;
+}
+
+.blob-3 {
+  bottom: -10%;
+  left: 10%;
+  width: 500rpx;
+  height: 500rpx;
+  background: rgba(255, 159, 10, 0.15); /* 温暖橙 */
+  animation-duration: 18s;
+  animation-delay: -10s;
+}
+
+@keyframes blob-float {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40rpx, -60rpx) scale(1.1); }
+  66% { transform: translate(-30rpx, 40rpx) scale(0.9); }
+  100% { transform: translate(0, 0) scale(1); }
 }
 
 .custom-nav {
@@ -31,6 +86,7 @@
   flex-direction: column;
   align-items: center;
   position: relative;
+  z-index: 1;
 }
 
 .header-top {
@@ -88,6 +144,8 @@
 
 /* 一行三个的网格布局 */
 .grid-wrapper {
+  position: relative;
+  z-index: 1;
   padding: 0 40rpx;
   display: grid;
   grid-template-columns: repeat(3, 1fr);

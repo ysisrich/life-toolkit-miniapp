@@ -36,6 +36,11 @@
   margin-left: 6rpx;
 }
 
+.home-icon {
+  width: 44rpx;
+  height: 44rpx;
+}
+
 .nav-title {
   position: absolute;
   left: 0;

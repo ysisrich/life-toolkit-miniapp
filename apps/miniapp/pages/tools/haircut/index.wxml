@@ -1,0 +1,57 @@
+<view class="container theme-{{gender}} {{urgencyClass}}">
+  <!-- 渐变背景光晕 -->
+  <view class="glow glow-1"></view>
+  <view class="glow glow-2"></view>
+
+  <custom-nav title="理发提醒" back="{{true}}" placeholder="{{true}}"></custom-nav>
+
+  <view class="main-content">
+    <view class="status-circle {{isDue ? 'due-circle' : ''}}" bindtap="resetTimer">
+      <view class="circle-inner {{isDue ? 'due' : ''}}">
+        <text class="days-text">{{daysRemaining}}</text>
+        <text class="days-label">{{isDue ? '天已逾期' : '天后需要理发'}}</text>
+      </view>
+    </view>
+    
+    <view class="settings-group glass-panel">
+      <!-- 上次理发时间 -->
+      <picker mode="date" value="{{lastDate}}" bindchange="onDateChange" class="picker-wrapper">
+        <view class="setting-item">
+          <text>上次理发</text>
+          <view class="picker-value">
+            <text>{{lastDate || '未设置'}}</text>
+            <image class="arrow-right" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNCkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNOSAxOGw2LTYtNi02Ii8+PC9zdmc+" />
+          </view>
+        </view>
+      </picker>
+
+      <view class="divider"></view>
+
+      <!-- 理发周期 -->
+      <picker mode="selector" range="{{intervals}}" value="{{intervalIndex}}" bindchange="onIntervalChange" class="picker-wrapper">
+        <view class="setting-item">
+          <text>理发周期</text>
+          <view class="picker-value">
+            <text>{{intervals[intervalIndex]}} 天</text>
+            <image class="arrow-right" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNCkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNOSAxOGw2LTYtNi02Ii8+PC9zdmc+" />
+          </view>
+        </view>
+      </picker>
+
+      <view class="divider"></view>
+
+      <!-- 性别切换 -->
+      <view class="setting-item" bindtap="toggleGender">
+        <text>我的性别</text>
+        <view class="picker-value gender-toggle">
+          <text>{{gender === 'boy' ? '👦 男生' : '👧 女生'}}</text>
+          <image class="arrow-right" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNCkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNOSAxOGw2LTYtNi02Ii8+PC9zdmc+" />
+        </view>
+      </view>
+    </view>
+
+    <view class="action-btn glass-panel" bindtap="resetTimer">
+      <text>✂️ 我刚刚理完发啦</text>
+    </view>
+  </view>
+</view>

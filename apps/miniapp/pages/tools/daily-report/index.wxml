@@ -28,12 +28,15 @@
         <text class="settings-title">提醒设置</text>
       </view>
       <view class="settings-body">
-        <view class="setting-item">
-          <text>每天提醒时间</text>
-          <picker mode="time" value="{{reminderTime}}" bindchange="onTimeChange">
-            <view class="picker-value">{{reminderTime}} ></view>
-          </picker>
-        </view>
+        <picker mode="time" value="{{reminderTime}}" bindchange="onTimeChange" class="picker-wrapper">
+          <view class="setting-item">
+            <text>每天提醒时间</text>
+            <view class="picker-value">
+              <text>{{reminderTime}}</text>
+              <image class="arrow-right" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMGE4NGZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTkgMThsNi02LTYtNiIvPjwvc3ZnPg==" />
+            </view>
+          </view>
+        </picker>
       </view>
     </view>
   </apple-modal>

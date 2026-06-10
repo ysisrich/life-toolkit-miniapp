@@ -1,4 +1,28 @@
 import { getBarkConfig as apiGetBarkConfig, updateBarkConfig } from '../api/settings';
+import config from '../config';
+
+/**
+ * 默默尝试增加一次微信订阅（如果用户之前勾选过“总是保持以上选择”）
+ */
+function silentAccumulateSubscription() {
+  wx.getSetting({
+    withSubscriptions: true,
+    success(res) {
+      if (
+        res.subscriptionsSetting &&
+        res.subscriptionsSetting.mainSwitch &&
+        res.subscriptionsSetting.itemSettings &&
+        res.subscriptionsSetting.itemSettings[config.SUBSCRIBE_TEMPLATE_ID] === 'accept'
+      ) {
+        wx.requestSubscribeMessage({
+          tmplIds: [config.SUBSCRIBE_TEMPLATE_ID],
+          success() {},
+          fail() {}
+        });
+      }
+    }
+  });
+}
 
 /**
  * 发送 Bark 消息通知
@@ -74,5 +98,6 @@ async function saveBarkConfig(server, key) {
 module.exports = {
   sendBarkNotification,
   getBarkConfig,
-  saveBarkConfig
+  saveBarkConfig,
+  silentAccumulateSubscription
 };

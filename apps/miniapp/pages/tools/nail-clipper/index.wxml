@@ -24,12 +24,15 @@
         <text class="settings-title">提醒设置</text>
       </view>
       <view class="settings-body">
-        <view class="setting-item">
-          <text>修剪周期</text>
-          <picker mode="selector" range="{{intervals}}" value="{{intervalIndex}}" bindchange="onIntervalChange">
-            <view class="picker-value">{{intervals[intervalIndex]}} 天 ></view>
-          </picker>
-        </view>
+        <picker mode="selector" range="{{intervals}}" value="{{intervalIndex}}" bindchange="onIntervalChange" class="picker-wrapper">
+          <view class="setting-item">
+            <text>修剪周期</text>
+            <view class="picker-value">
+              <text>{{intervals[intervalIndex]}} 天</text>
+              <image class="arrow-right" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMGE4NGZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTkgMThsNi02LTYtNiIvPjwvc3ZnPg==" />
+            </view>
+          </view>
+        </picker>
         <button class="reset-btn" bindtap="resetTimer">我刚刚剪了指甲</button>
       </view>
     </view>

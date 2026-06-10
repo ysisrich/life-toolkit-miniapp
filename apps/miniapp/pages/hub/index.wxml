@@ -1,4 +1,11 @@
 <view class="container">
+  <!-- 动态流光背景层 -->
+  <view class="bg-layer">
+    <view class="bg-blob blob-1"></view>
+    <view class="bg-blob blob-2"></view>
+    <view class="bg-blob blob-3"></view>
+  </view>
+
   <!-- 自定义导航栏 -->
   <custom-nav title="生活工具箱" back="{{false}}" placeholder="{{true}}"></custom-nav>
 

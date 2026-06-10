@@ -7,8 +7,8 @@ Page({
     daysRemaining: 7,
     isClippingDue: false,
     showModal: false,
-    intervals: [5, 7, 10, 14, 21],
-    intervalIndex: 1,
+    intervals: [1, 2, 3, 5, 7, 10, 14, 21],
+    intervalIndex: 4,
     interval: 7
   },
 
@@ -25,7 +25,7 @@ Page({
       }
       
       let intervalIndex = this.data.intervals.indexOf(savedInterval);
-      if (intervalIndex === -1) intervalIndex = 1;
+      if (intervalIndex === -1) intervalIndex = this.data.intervals.indexOf(7);
 
       this.setData({
         interval: savedInterval,

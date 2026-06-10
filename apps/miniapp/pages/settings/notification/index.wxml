@@ -1,36 +1,55 @@
 <view class="container">
-  <custom-nav title="通知设置" back="{{true}}" placeholder="{{true}}"></custom-nav>
+  <custom-nav title="消息设置" back="{{true}}" placeholder="{{true}}"></custom-nav>
 
   <view class="content">
-    <view class="header">
-      <text class="title">Bark 消息推送</text>
-      <text class="subtitle">配置后，小工具可以通过 Bark 向你的 iOS 设备发送实时通知消息。</text>
-    </view>
-
     <view class="form-group glass-panel">
-      <view class="input-item">
-        <text class="label">服务器地址</text>
-        <input class="input" value="{{server}}" bindinput="onServerInput" placeholder="默认: https://api.day.app" placeholder-class="input-placeholder"/>
+      <!-- 微信订阅通知开关 -->
+      <view class="input-item switch-item">
+        <text class="label">微信订阅通知</text>
+        <switch checked="{{wechatNotify}}" bindchange="onWechatNotifyChange" color="#0A84FF" />
       </view>
       
       <view class="divider"></view>
       
-      <view class="input-item">
-        <text class="label">Bark Key</text>
-        <input class="input" value="{{key}}" bindinput="onKeyInput" placeholder="请输入你的 Bark Key" placeholder-class="input-placeholder"/>
+      <!-- Bark 消息推送开关 -->
+      <view class="input-item switch-item">
+        <text class="label">Bark iOS推送</text>
+        <switch checked="{{barkNotify}}" bindchange="onBarkNotifyChange" color="#0A84FF" />
       </view>
     </view>
 
-    <view class="action-group">
-      <button class="btn btn-primary" bindtap="onSaveConfig">保存配置</button>
-      <button class="btn btn-secondary" bindtap="onTestPush">测试发送</button>
-    </view>
-    
-    <view class="help-text">
-      <view>如何在 iPhone 上使用 Bark？</view>
-      <view>1. 在 App Store 搜索并下载 "Bark"</view>
-      <view>2. 打开 App，复制给你的专属 Key</view>
-      <view>3. 将 Key 粘贴到上方输入框</view>
-    </view>
+    <!-- 只有 Bark 开启时才显示以下配置 -->
+    <block wx:if="{{barkNotify}}">
+      <view class="header" style="margin-top: 40rpx;">
+        <text class="title">Bark 配置参数</text>
+        <text class="subtitle">小工具可以通过 Bark 向你的 iOS 设备发送推送通知。</text>
+      </view>
+
+      <view class="form-group glass-panel">
+        <view class="input-item">
+          <text class="label">服务器地址</text>
+          <input class="input" value="{{server}}" bindinput="onServerInput" placeholder="默认: https://api.day.app" placeholder-class="input-placeholder"/>
+        </view>
+        
+        <view class="divider"></view>
+        
+        <view class="input-item">
+          <text class="label">Bark Key</text>
+          <input class="input" value="{{key}}" bindinput="onKeyInput" placeholder="请输入你的 Bark Key" placeholder-class="input-placeholder"/>
+        </view>
+      </view>
+
+      <view class="action-group">
+        <button class="btn btn-primary" bindtap="onSaveConfig">保存 Bark 配置</button>
+        <button class="btn btn-secondary" bindtap="onTestPush">测试发送</button>
+      </view>
+      
+      <view class="help-text">
+        <view>如何在 iPhone 上使用 Bark？</view>
+        <view>1. 在 App Store 搜索并下载 "Bark"</view>
+        <view>2. 打开 App，复制给你的专属 Key</view>
+        <view>3. 将 Key 粘贴到上方输入框</view>
+      </view>
+    </block>
   </view>
 </view>

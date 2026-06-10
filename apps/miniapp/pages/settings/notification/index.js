@@ -6,7 +6,9 @@ Page({
     navBarHeight: 0,
     statusBarHeight: 0,
     server: '',
-    key: ''
+    key: '',
+    wechatNotify: true,
+    barkNotify: false
   },
 
   async onLoad() {
@@ -14,17 +16,34 @@ Page({
     
     // 加载已有配置
     const config = await notification.getBarkConfig();
+    const wechatNotify = wx.getStorageSync('wechatNotify') !== false; // 默认开启
+    const barkNotify = wx.getStorageSync('barkNotify') || !!config.key; // 如果有 key 则默认开启
 
     this.setData({
       navBarHeight: navBarHeight,
       statusBarHeight: systemInfo.statusBarHeight,
       server: config.server,
-      key: config.key
+      key: config.key,
+      wechatNotify,
+      barkNotify
     });
   },
 
   onBack() {
     wx.navigateBack();
+  },
+
+  onWechatNotifyChange(e) {
+    const value = e.detail.value;
+    this.setData({ wechatNotify: value });
+    wx.setStorageSync('wechatNotify', value);
+    wx.showToast({ title: value ? '已开启订阅通知' : '已关闭订阅通知', icon: 'none' });
+  },
+
+  onBarkNotifyChange(e) {
+    const value = e.detail.value;
+    this.setData({ barkNotify: value });
+    wx.setStorageSync('barkNotify', value);
   },
 
   onServerInput(e) {
@@ -55,7 +74,6 @@ Page({
   },
 
   onTestPush() {
-    // 确保使用最新输入的内容
     const { server, key } = this.data;
     const finalServer = server.trim() || 'https://api.day.app';
     const finalKey = key.trim();
@@ -68,7 +86,6 @@ Page({
       return;
     }
 
-    // 临时保存以便测试
     notification.saveBarkConfig(finalServer, finalKey).then(() => {
       wx.showLoading({ title: '发送中...' });
 

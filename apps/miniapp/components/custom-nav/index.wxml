@@ -2,8 +2,13 @@
   <view class="nav-content" style="top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px;">
     
     <view class="nav-back" bindtap="goBack" wx:if="{{back}}">
-      <text class="back-icon">‹</text>
-      <text class="back-text">返回</text>
+      <block wx:if="{{isFirstPage}}">
+        <image class="home-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0zIDlsOS03IDkgN3YxMWEyIDIgMCAwIDEtMiAySDVhMiAyIDAgMCAxLTItMnoiLz48cG9seWxpbmUgcG9pbnRzPSI5IDIyIDkgMTIgMTUgMTIgMTUgMjIiLz48L3N2Zz4=" />
+      </block>
+      <block wx:else>
+        <text class="back-icon">‹</text>
+        <text class="back-text">返回</text>
+      </block>
     </view>
     
     <view class="nav-title" style="line-height: {{menuButtonHeight}}px;">

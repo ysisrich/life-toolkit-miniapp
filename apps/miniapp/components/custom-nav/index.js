@@ -21,26 +21,35 @@ Component({
   data: {
     navBarHeight: 0,
     menuButtonTop: 0,
-    menuButtonHeight: 0
+    menuButtonHeight: 0,
+    isFirstPage: false
   },
 
   attached() {
     const app = getApp();
     const { navBarHeight, menuButtonInfo } = app.globalData;
+    const pages = getCurrentPages();
+    const isFirstPage = pages.length === 1;
+
     this.setData({
       navBarHeight: navBarHeight || 80,
       menuButtonTop: menuButtonInfo ? menuButtonInfo.top : 44,
-      menuButtonHeight: menuButtonInfo ? menuButtonInfo.height : 32
+      menuButtonHeight: menuButtonInfo ? menuButtonInfo.height : 32,
+      isFirstPage
     });
   },
 
   methods: {
     goBack() {
-      wx.navigateBack({
-        fail: () => {
-          wx.switchTab({ url: '/pages/hub/index' });
-        }
-      });
+      if (this.data.isFirstPage) {
+        wx.reLaunch({ url: '/pages/hub/index' });
+      } else {
+        wx.navigateBack({
+          fail: () => {
+            wx.reLaunch({ url: '/pages/hub/index' });
+          }
+        });
+      }
     }
   }
 });

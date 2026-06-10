@@ -1,0 +1,36 @@
+<view class="container">
+  <custom-nav title="通用设置" back="{{true}}" placeholder="{{true}}"></custom-nav>
+
+  <view class="content">
+    <view class="list-group glass-panel">
+      <!-- 消息设置 -->
+      <view class="list-item" hover-class="list-item-hover" bindtap="navigateTo" data-url="/pages/settings/notification/index">
+        <view class="item-left">
+          <view class="icon-wrapper bg-blue">
+            <image class="icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0yMCwySDRBMiwyIDAgMCwwIDIsNFYyMkw2LDE4SDIwQTIsMiAwIDAsMCAyMiwxNlY0QTIsMiAwIDAsMCAyMCwyTTIwLDE2SDUuMTdMNCwxNy4xN1Y0SDIwVjE2WiIgLz48L3N2Zz4=" />
+          </view>
+          <text class="item-title">消息设置</text>
+        </view>
+        <view class="item-right">
+          <image class="arrow-right" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNCkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNOSAxOGw2LTYtNi02Ii8+PC9zdmc+" />
+        </view>
+      </view>
+
+      <view class="divider"></view>
+
+      <!-- 清除缓存 -->
+      <view class="list-item" hover-class="list-item-hover" bindtap="clearCache">
+        <view class="item-left">
+          <view class="icon-wrapper bg-red">
+            <image class="icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xOSw0SDE1LjVMMTQuNSwzSDkuNUw4LjUsNEg1VjZIMTlNNiwxOUEyLDIgMCAwLDAgOCwyMUgxNkEyLDIgMCAwLDAgMTgsMTlWN0g2VjE5WiIgLz48L3N2Zz4=" />
+          </view>
+          <text class="item-title">清除缓存</text>
+        </view>
+        <view class="item-right">
+          <text class="item-value">{{cacheSize}}</text>
+          <image class="arrow-right" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNCkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNOSAxOGw2LTYtNi02Ii8+PC9zdmc+" />
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

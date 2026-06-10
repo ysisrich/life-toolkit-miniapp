@@ -213,7 +213,19 @@
   margin-bottom: 40rpx;
 }
 
+.picker-wrapper {
+  width: 100%;
+}
+
 .picker-value {
   color: #0a84ff;
   font-size: 32rpx;
+  display: flex;
+  align-items: center;
+}
+
+.arrow-right {
+  width: 32rpx;
+  height: 32rpx;
+  margin-left: 8rpx;
 }

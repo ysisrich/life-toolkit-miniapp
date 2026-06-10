@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/hub/index",
+    "pages/settings/home/index",
     "pages/settings/notification/index"
   ],
   "subPackages": [
@@ -9,7 +10,8 @@
       "name": "tools",
       "pages": [
         "nail-clipper/index",
-        "daily-report/index"
+        "daily-report/index",
+        "haircut/index"
       ]
     }
   ],

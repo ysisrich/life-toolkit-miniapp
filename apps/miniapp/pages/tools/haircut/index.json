@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "理发提醒",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "custom-nav": "/components/custom-nav/index",
+    "apple-modal": "/components/apple-modal/index"
+  }
+}
