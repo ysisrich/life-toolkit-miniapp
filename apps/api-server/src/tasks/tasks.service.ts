@@ -181,8 +181,21 @@ export class TasksService {
 
         if (todayRecord) continue; // Already wrote today
 
-        // If not wrote, check if we already PUSHED a reminder today to avoid spamming every 5 min
-        if (data.lastPushedDate === nowObj.format('YYYY-MM-DD')) continue;
+        // 如果今天还没打卡，检查上一次推送时间。如果是今天推送过的，且距离上次推送不足 10 分钟，则跳过
+        if (data.lastPushedTimestamp) {
+          const lastPushedObj = dayjs(data.lastPushedTimestamp);
+          if (nowObj.isSame(lastPushedObj, 'day')) {
+            if (nowObj.diff(lastPushedObj, 'minute') < 10) {
+              continue;
+            }
+          }
+        } else if (data.lastPushedDate === nowObj.format('YYYY-MM-DD')) {
+          // 兼容老数据：如果是今天用旧逻辑推送过的，给它补上时间戳并跳过，等 10 分钟后下一轮
+          data.lastPushedTimestamp = nowObj.valueOf();
+          setting.settingData = JSON.stringify(data);
+          await this.settingsRepository.save(setting);
+          continue;
+        }
 
         // 如果还没打卡，获取最后一次的打卡记录作为“上次打卡时间”
         const lastRecord = await this.taskRecordRepository.findOne({
@@ -213,8 +226,9 @@ export class TasksService {
           'pages/tools/daily-report/index'
         );
 
-        // Update lastPushedDate
+        // 记录这一次的推送时间和日期
         data.lastPushedDate = nowObj.format('YYYY-MM-DD');
+        data.lastPushedTimestamp = nowObj.valueOf();
         setting.settingData = JSON.stringify(data);
         await this.settingsRepository.save(setting);
 
@@ -227,5 +241,51 @@ export class TasksService {
     if (sentCount > 0) {
       this.logger.log(`Daily report reminders finished. Sent: ${sentCount}`);
     }
+  }
+
+  async getMonthStats(userId: number, toolKey: string, year: number, month: number) {
+    const startOfMonth = dayjs().year(year).month(month - 1).startOf('month').toDate();
+    const endOfMonth = dayjs().year(year).month(month - 1).endOf('month').toDate();
+
+    const records = await this.taskRecordRepository.find({
+      where: {
+        userId,
+        toolKey,
+        createdAt: Between(startOfMonth, endOfMonth)
+      }
+    });
+
+    const recordMap = {};
+    for (const record of records) {
+      const dateStr = dayjs(record.createdAt).format('YYYY-MM-DD');
+      let data: any = {};
+      try {
+        data = record.taskData ? JSON.parse(record.taskData) : {};
+      } catch(e) {}
+      
+      // 记录当天是否有打卡，以及是否是“请假”
+      recordMap[dateStr] = {
+        isLeave: data.type === 'leave'
+      };
+    }
+
+    let holidays = {};
+    try {
+      const monthStr = month.toString().padStart(2, '0');
+      const response = await fetch(`https://timor.tech/api/holiday/year/${year}-${monthStr}`);
+      if (response.ok) {
+        const result = await response.json();
+        if (result.code === 0 && result.holiday) {
+          holidays = result.holiday;
+        }
+      }
+    } catch (e) {
+      this.logger.warn(`Failed to fetch holiday API for ${year}-${month}. Error: ${e.message}`);
+    }
+
+    return {
+      records: recordMap,
+      holidays
+    };
   }
 }

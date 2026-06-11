@@ -11,6 +11,7 @@
       "pages": [
         "nail-clipper/index",
         "daily-report/index",
+        "daily-report-stats/index",
         "haircut/index"
       ]
     }

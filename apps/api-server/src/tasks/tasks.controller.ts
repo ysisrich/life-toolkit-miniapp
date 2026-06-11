@@ -22,6 +22,14 @@ export class TasksController {
   ) {}
 
   @UseGuards(JwtAuthGuard)
+  @Get(':toolKey/stats')
+  async getStats(@Request() req, @Param('toolKey') toolKey: string) {
+    const year = parseInt(req.query.year) || new Date().getFullYear();
+    const month = parseInt(req.query.month) || (new Date().getMonth() + 1);
+    return this.tasksService.getMonthStats(req.user.userId, toolKey, year, month);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':toolKey')
   async getTasks(@Request() req, @Param('toolKey') toolKey: string) {
     return this.taskRecordRepository.find({

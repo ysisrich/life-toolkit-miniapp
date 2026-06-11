@@ -1,0 +1,46 @@
+<view class="container">
+  <custom-nav title="打卡统计" back="{{true}}" placeholder="{{true}}"></custom-nav>
+
+  <view class="main-content">
+    <view class="calendar-panel glass-panel">
+      <view class="stats-summary">
+        <text class="stat-item">打卡: <text class="stat-num">{{punchCount}}</text> 天</text>
+        <text class="stat-item">请假: <text class="stat-num leave-num">{{leaveCount}}</text> 天</text>
+      </view>
+
+      <view class="calendar-header">
+        <view class="month-btn" bindtap="prevMonth"><text>◀</text></view>
+        <text class="month-title">{{currentYear}}年 {{currentMonth}}月</text>
+        <view class="month-btn" bindtap="nextMonth"><text>▶</text></view>
+      </view>
+      <view class="calendar-weekdays">
+        <text class="weekday weekend">日</text>
+        <text class="weekday">一</text>
+        <text class="weekday">二</text>
+        <text class="weekday">三</text>
+        <text class="weekday">四</text>
+        <text class="weekday">五</text>
+        <text class="weekday weekend">六</text>
+      </view>
+      <view class="calendar-grid">
+        <view 
+          class="calendar-cell {{item.empty ? 'empty' : ''}} {{item.isRecord && !item.isLeave ? 'is-record' : ''}} {{item.isLeave ? 'is-leave' : ''}} {{item.isWeekend ? 'is-weekend' : ''}} {{item.holidayInfo && item.holidayInfo.holiday ? 'is-holiday' : ''}} {{item.holidayInfo && !item.holidayInfo.holiday ? 'is-workday' : ''}}" 
+          wx:for="{{calendarDays}}" 
+          wx:key="index"
+        >
+          <text wx:if="{{!item.empty}}" class="day-num">{{item.day}}</text>
+          
+          <view wx:if="{{item.holidayInfo}}" class="badge {{item.holidayInfo.holiday ? 'badge-holiday' : 'badge-workday'}}">
+            {{item.holidayInfo.holiday ? '休' : '班'}}
+          </view>
+
+          <!-- 节假日名称 -->
+          <text wx:if="{{item.holidayInfo && item.holidayInfo.holiday}}" class="holiday-name">{{item.holidayInfo.name}}</text>
+
+          <view wx:if="{{item.isRecord && !item.isLeave}}" class="record-dot"></view>
+          <text wx:if="{{item.isLeave}}" class="leave-text">假</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

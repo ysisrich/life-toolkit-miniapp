@@ -1,8 +1,11 @@
 FROM node:20.20.2-alpine
 
-# 安装构建原生模块(如 sqlite3)所需的底层依赖，并全局安装 pnpm
-RUN apk add --no-cache python3 make g++ \
-    && npm install -g pnpm@10.34.1
+# 替换 Alpine 源为国内阿里云镜像，极大加速 apk 下载
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
+# 安装构建原生模块(如 sqlite3)所需的底层依赖，以及 Python 3.12 所需的 setuptools
+RUN apk add --no-cache python3 make g++ py3-setuptools \
+    && npm install -g pnpm@10.34.1 --registry=https://registry.npmmirror.com
 
 WORKDIR /app
 
@@ -12,8 +15,9 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # 拷贝全量源代码
 COPY . .
 
-# 只安装 api-server 及其依赖模块的依赖，避免安装前端无用依赖
-RUN pnpm install --filter api-server...
+# 配置 pnpm 淘宝镜像，并只安装 api-server 依赖
+RUN pnpm config set registry https://registry.npmmirror.com \
+    && pnpm install --filter api-server...
 
 # 专门构建 api-server
 RUN pnpm --filter api-server run build

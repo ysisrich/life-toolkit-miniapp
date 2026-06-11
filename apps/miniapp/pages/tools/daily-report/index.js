@@ -48,6 +48,12 @@ Page({
     }
   },
 
+  openStats() {
+    wx.navigateTo({
+      url: '/pages/tools/daily-report-stats/index'
+    });
+  },
+
   async recordReport() {
     if (this.data.isWritten) {
       wx.showToast({ title: '今天已经写过啦', icon: 'none' });
