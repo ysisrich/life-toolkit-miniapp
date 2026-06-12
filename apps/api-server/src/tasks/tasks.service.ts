@@ -10,6 +10,8 @@ import { WechatService } from '../wechat/wechat.service';
 @Injectable()
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
+  private workdayCache = new Map<string, boolean>();
+  private monthlyHolidayCache = new Map<string, any>();
 
   constructor(
     @InjectRepository(UserSetting)
@@ -113,18 +115,31 @@ export class TasksService {
   }
 
   async checkIsWorkday(dateObj: dayjs.Dayjs): Promise<boolean> {
+    const dateStr = dateObj.format('YYYY-MM-DD');
+    if (this.workdayCache.has(dateStr)) {
+      return this.workdayCache.get(dateStr)!;
+    }
+
     try {
-      const dateStr = dateObj.format('YYYY-MM-DD');
-      const response = await fetch(`https://timor.tech/api/holiday/info/${dateStr}`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3秒超时防止请求被挂起
+
+      const response = await fetch(`https://timor.tech/api/holiday/info/${dateStr}`, {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
       if (response.ok) {
         const result = await response.json();
-        if (result.code === 0) {
+        if (result.code === 0 && result.type) {
           // 0: 工作日, 1: 休息日, 2: 节假日, 3: 调休工作日
-          return result.type.type === 0 || result.type.type === 3;
+          const isWorkday = result.type.type === 0 || result.type.type === 3;
+          this.workdayCache.set(dateStr, isWorkday);
+          return isWorkday;
         }
       }
     } catch (e) {
-      this.logger.warn(`Failed to fetch holiday API, using fallback. Error: ${e.message}`);
+      this.logger.warn(`Failed to fetch holiday API for ${dateStr}, using fallback. Error: ${e.message}`);
     }
 
     // Fallback: Monday to Friday
@@ -244,8 +259,9 @@ export class TasksService {
   }
 
   async getMonthStats(userId: number, toolKey: string, year: number, month: number) {
-    const startOfMonth = dayjs().year(year).month(month - 1).startOf('month').toDate();
-    const endOfMonth = dayjs().year(year).month(month - 1).endOf('month').toDate();
+    // 使用 new Date(year, month - 1, 1) 避免 dayjs 产生月份溢出 bug
+    const startOfMonth = dayjs(new Date(year, month - 1, 1)).startOf('month').toDate();
+    const endOfMonth = dayjs(new Date(year, month - 1, 1)).endOf('month').toDate();
 
     const records = await this.taskRecordRepository.find({
       where: {
@@ -269,18 +285,32 @@ export class TasksService {
       };
     }
 
+    const monthStr = month.toString().padStart(2, '0');
+    const cacheKey = `${year}-${monthStr}`;
     let holidays = {};
-    try {
-      const monthStr = month.toString().padStart(2, '0');
-      const response = await fetch(`https://timor.tech/api/holiday/year/${year}-${monthStr}`);
-      if (response.ok) {
-        const result = await response.json();
-        if (result.code === 0 && result.holiday) {
-          holidays = result.holiday;
+
+    if (this.monthlyHolidayCache.has(cacheKey)) {
+      holidays = this.monthlyHolidayCache.get(cacheKey);
+    } else {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3秒超时防止接口挂起
+
+        const response = await fetch(`https://timor.tech/api/holiday/year/${cacheKey}`, {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.code === 0 && result.holiday) {
+            holidays = result.holiday;
+            this.monthlyHolidayCache.set(cacheKey, holidays);
+          }
         }
+      } catch (e) {
+        this.logger.warn(`Failed to fetch holiday API for ${year}-${month}. Error: ${e.message}`);
       }
-    } catch (e) {
-      this.logger.warn(`Failed to fetch holiday API for ${year}-${month}. Error: ${e.message}`);
     }
 
     return {

@@ -40,10 +40,33 @@
   padding: 0 20rpx;
 }
 
+.month-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+}
+
 .month-title {
   font-size: 32rpx;
   font-weight: 600;
   color: #fff;
+}
+
+.today-btn {
+  font-size: 20rpx;
+  color: #30d158;
+  background: rgba(48, 209, 88, 0.1);
+  border: 1px solid rgba(48, 209, 88, 0.3);
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.today-btn:active {
+  background: rgba(48, 209, 88, 0.25);
+  transform: scale(0.95);
 }
 
 .month-btn {

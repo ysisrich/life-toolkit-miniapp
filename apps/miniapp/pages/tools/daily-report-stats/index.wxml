@@ -10,7 +10,10 @@
 
       <view class="calendar-header">
         <view class="month-btn" bindtap="prevMonth"><text>◀</text></view>
-        <text class="month-title">{{currentYear}}年 {{currentMonth}}月</text>
+        <view class="month-title-container">
+          <text class="month-title">{{currentYear}}年 {{currentMonth}}月</text>
+          <text wx:if="{{showTodayBtn}}" class="today-btn" bindtap="backToToday">回到今日</text>
+        </view>
         <view class="month-btn" bindtap="nextMonth"><text>▶</text></view>
       </view>
       <view class="calendar-weekdays">
