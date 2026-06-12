@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { SettingsModule } from './settings/settings.module';
 import { TasksModule } from './tasks/tasks.module';
+import { AiModule } from './ai/ai.module';
 import { User } from './users.entity';
 import { UserSetting } from './user-settings.entity';
 import { TaskRecord } from './task-record.entity';
@@ -21,6 +22,7 @@ import { LoggerMiddleware } from './logger/logger.middleware';
     AuthModule,
     SettingsModule,
     TasksModule,
+    AiModule,
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: process.env.DB_PATH || 'life-toolkit.db',

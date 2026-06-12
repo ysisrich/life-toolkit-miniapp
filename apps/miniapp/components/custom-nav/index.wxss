@@ -4,6 +4,8 @@
   left: 0;
   width: 100%;
   z-index: 999;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .nav-content {

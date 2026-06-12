@@ -1,0 +1,376 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #000;
+  box-sizing: border-box;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+}
+
+.model-bar {
+  position: fixed;
+  left: 20rpx;
+  width: calc(100% - 40rpx);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 32rpx;
+  margin: 0;
+  margin-top: 20rpx;
+  border-radius: 24rpx;
+  z-index: 10;
+  box-sizing: border-box;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.model-label {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.model-picker-btn {
+  font-size: 24rpx;
+  color: #30d158;
+  background: rgba(48, 209, 88, 0.08);
+  border: 1px solid rgba(48, 209, 88, 0.25);
+  padding: 8rpx 24rpx;
+  border-radius: 30rpx;
+  font-weight: 500;
+}
+
+.model-picker-btn .arrow {
+  font-size: 18rpx;
+  margin-left: 6rpx;
+}
+
+.chat-scroll {
+  flex: 1;
+  overflow: hidden;
+}
+
+.chat-container {
+  padding: 140rpx 30rpx 200rpx 30rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-wrapper {
+  display: flex;
+  margin-bottom: 30rpx;
+  max-width: 82%;
+}
+
+.message-wrapper.assistant {
+  align-self: flex-start;
+}
+
+.message-wrapper.user {
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.message-wrapper .bubble {
+  padding: 22rpx 30rpx;
+  border-radius: 28rpx;
+  font-size: 28rpx;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.message-wrapper.assistant .bubble {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  color: #e5e5ea;
+  border-top-left-radius: 8rpx;
+}
+
+.message-wrapper.user .bubble {
+  background: linear-gradient(135deg, #30d158, #1c8535);
+  color: #fff;
+  border-top-right-radius: 8rpx;
+  box-shadow: 0 4rpx 16rpx rgba(48, 209, 88, 0.15);
+}
+
+.msg-text {
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+/* 居中系统指令通知卡片 */
+.message-wrapper.system_action {
+  max-width: 100%;
+  margin: 15rpx auto;
+  align-self: center;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.action-card {
+  background: rgba(48, 209, 88, 0.04);
+  border: 1px dashed rgba(48, 209, 88, 0.3);
+  padding: 10rpx 24rpx;
+  border-radius: 16rpx;
+  text-align: center;
+}
+
+.action-text {
+  font-size: 22rpx;
+  color: #30d158;
+  font-weight: 500;
+}
+
+/* 输入板样式 */
+.input-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 24rpx 30rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  border-top-left-radius: 40rpx;
+  border-top-right-radius: 40rpx;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 99;
+}
+
+.chat-input {
+  flex: 1;
+  height: 80rpx;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 40rpx;
+  padding: 0 32rpx;
+  color: #fff;
+  font-size: 28rpx;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-sizing: border-box;
+}
+
+.placeholder-class {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.send-btn {
+  margin-left: 20rpx;
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 16rpx 32rpx;
+  border-radius: 40rpx;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  box-sizing: border-box;
+}
+
+.send-btn.active {
+  color: #fff;
+  background: #30d158;
+  box-shadow: 0 4rpx 12rpx rgba(48, 209, 88, 0.35);
+}
+
+.send-btn:active {
+  transform: scale(0.95);
+}
+
+/* 思考中点闪烁动画 */
+.dot-flashing {
+  position: relative;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 5rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.8);
+  animation: dot-flashing 1s infinite linear alternate;
+  animation-delay: 0.5s;
+  margin: 10rpx 20rpx;
+}
+.dot-flashing::before, .dot-flashing::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+.dot-flashing::before {
+  left: -16rpx;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 5rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.8);
+  animation: dot-flashing 1s infinite linear alternate;
+  animation-delay: 0s;
+}
+.dot-flashing::after {
+  left: 16rpx;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 5rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.8);
+  animation: dot-flashing 1s infinite linear alternate;
+  animation-delay: 1s;
+}
+
+@keyframes dot-flashing {
+  0% { background-color: rgba(255, 255, 255, 0.8); }
+  50%, 100% { background-color: rgba(255, 255, 255, 0.2); }
+}
+
+/* 键盘/语音切换按钮 */
+.mode-toggle-btn {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+}
+
+.toggle-icon {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+/* 多行自适应高度输入框 */
+.chat-textarea {
+  flex: 1;
+  min-height: 80rpx;
+  max-height: 180rpx;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 24rpx;
+  padding: 20rpx 32rpx;
+  color: #fff;
+  font-size: 28rpx;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-sizing: border-box;
+}
+
+/* 语音输入按钮 */
+.voice-record-btn {
+  flex: 1;
+  height: 80rpx;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.voice-record-btn.active {
+  background: rgba(48, 209, 88, 0.2);
+  border-color: rgba(48, 209, 88, 0.5);
+  color: #30d158;
+  transform: scale(0.98);
+}
+
+/* 全屏录音状态遮罩层 */
+.recording-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(10px);
+}
+
+.mic-icon-wrapper {
+  width: 160rpx;
+  height: 160rpx;
+  background: rgba(48, 209, 88, 0.1);
+  border: 1px solid rgba(48, 209, 88, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40rpx;
+  position: relative;
+  z-index: 2;
+}
+
+.mic-icon {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.recording-tip {
+  color: #30d158;
+  font-size: 30rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+}
+
+/* 录音波纹动画 */
+.voice-ripple {
+  position: absolute;
+  width: 160rpx;
+  height: 160rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ripple-dot {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: rgba(48, 209, 88, 0.05);
+}
+
+.ripple-circle {
+  position: absolute;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  border: 1px solid rgba(48, 209, 88, 0.4);
+  opacity: 0;
+  animation: ripple-animation 2s infinite ease-out;
+}
+
+.ripple-2 {
+  animation-delay: 1s;
+}
+
+@keyframes ripple-animation {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* 顶部遮罩，防止滑动时内容漏出 */
+.header-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #000;
+  z-index: 9;
+}

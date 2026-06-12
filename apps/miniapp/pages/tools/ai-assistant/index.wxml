@@ -1,0 +1,105 @@
+<view class="container">
+  <custom-nav title="智能习惯助手" back="{{true}}" placeholder="{{true}}" background="rgba(0, 0, 0, 0.6)"></custom-nav>
+
+  <!-- 顶部遮罩，防止聊天气泡从导航栏和模型栏之间的间隙漏出 -->
+  <view class="header-mask" style="height: calc({{navBarHeight}}px + 20rpx);"></view>
+
+  <!-- 顶栏模型切换器 -->
+  <view class="model-bar glass-panel" style="top: {{navBarHeight}}px;">
+    <text class="model-label">当前AI模型：</text>
+    <picker bindchange="onModelChange" value="{{modelIndex}}" range="{{models}}" range-key="name">
+      <view class="model-picker-btn">
+        {{models[modelIndex].name}} <text class="arrow">▼</text>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 聊天流 -->
+  <scroll-view 
+    class="chat-scroll" 
+    scroll-y 
+    scroll-into-view="{{lastMessageId}}" 
+    scroll-with-animation
+  >
+    <view class="chat-container" style="padding-bottom: calc(160rpx + {{keyboardHeight}}px + env(safe-area-inset-bottom));">
+      <view 
+        wx:for="{{chatList}}" 
+        wx:key="index" 
+        id="msg-{{index}}" 
+        class="message-wrapper {{item.role}}"
+      >
+        <!-- 系统动作提醒卡片 -->
+        <view wx:if="{{item.role === 'system_action'}}" class="action-card">
+          <text class="action-text">{{item.content}}</text>
+        </view>
+
+        <!-- 助理与用户气泡 -->
+        <view wx:else class="bubble">
+          <text class="msg-text" user-select>{{item.content}}</text>
+        </view>
+      </view>
+      
+      <!-- 思考中提示 -->
+      <view wx:if="{{thinking}}" id="msg-thinking" class="message-wrapper assistant thinking">
+        <view class="bubble">
+          <view class="dot-flashing"></view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 录音状态全屏遮罩层 -->
+  <view class="recording-mask" wx:if="{{recording}}">
+    <view class="voice-ripple">
+      <view class="ripple-dot"></view>
+      <view class="ripple-circle ripple-1"></view>
+      <view class="ripple-circle ripple-2"></view>
+    </view>
+    <view class="mic-icon-wrapper">
+      <image class="mic-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBmZjY2IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmtqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDFhMyAzIDAgMCAwLTMgM3Y4YTMgMyAwIDAgMCA2IDBWM2EzIDMgMCAwIDAtMy0zeiIvPjxwYXRoIGQ9Ik0xOSA4djNhNyA3IDAgMCAxLTE0IDBWOEIiLz48bGluZSB4MT0iMTIiIHkxPSIxOCIgeDI9IjEyIiB5Mj0iMjIiLz48bGluZSB4MT0iOCIgeTE9IjIyIiB4Mj0iMTYiIHkyPSIyMiIvPjwvc3ZnPg=="></image>
+    </view>
+    <text class="recording-tip">{{recordingTip}}</text>
+  </view>
+
+  <!-- 底部输入框面板 -->
+  <view class="input-panel glass-panel" style="bottom: {{keyboardHeight}}px;">
+    <!-- 键盘/语音切换按钮 -->
+    <view class="mode-toggle-btn" bindtap="toggleInputMode">
+      <image class="toggle-icon" src="{{inputMode === 'keyboard' ? 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmtqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDFhMyAzIDAgMCAwLTMgM3Y4YTMgMyAwIDAgMCA2IDBWM2EzIDMgMCAwIDAtMy0zeiIvPjxwYXRoIGQ9Ik0xOSA4djNhNyA3IDAgMCAxLTE0IDBWOEIiLz48bGluZSB4MT0iMTIiIHkxPSIxOCIgeDI9IjEyIiB5Mj0iMjIiLz48bGluZSB4MT0iOCIgeTE9IjIyIiB4Mj0iMTYiIHkyPSIyMiIvPjwvc3ZnPg==' : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmtqb2luPSJyb3VuZCI+PHJlY3QgeD0iMyIgeT0iNSIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE0IiByeD0iMiIgcnk9IjIiLz48bGluZSB4MT0iNyIgeTE9IjkiIHgyPSI3IiB5Mj0iOSIvPjxsaW5lIHgxPSIxMSIgeTE9IjkiIHgyPSIxMSIgeTI9IjkiLz48bGluZSB4MT0iMTUiIHkxPSI5IiB4Mj0iMTUiIHkyPSI5Ii8+PHxpbmUgeDE9IjciIHkxPSIxMyIgeDI9IjciIHkyPSIxMyIvPjxsaW5lIHgxPSIxMSIgeTE9IjEzIiB4Mj0iMTUiIHkyPSIxMyIvPjxsaW5lIHgxPSIxOSIgeTE9IjkiIHgyPSIxOSIgeTI9IjkiLz48bGluZSB4MT0iMTkiIHkxPSIxMyIgeDI9IjE5IiB5Mj0iMTMiLz48L3N2Zz4='}}"></image>
+    </view>
+
+    <!-- 键盘输入模式下的多行高度自适应输入框 -->
+    <block wx:if="{{inputMode === 'keyboard'}}">
+      <textarea 
+        class="chat-textarea" 
+        value="{{inputValue}}" 
+        placeholder="输入内容..." 
+        placeholder-class="placeholder-class" 
+        bindinput="onInput"
+        bindconfirm="sendMsg"
+        confirm-type="send"
+        auto-height="{{true}}"
+        adjust-position="{{false}}"
+        cursor-spacing="20"
+        bindfocus="onFocus"
+        bindblur="onBlur"
+        maxlength="500"
+      />
+    </block>
+
+    <!-- 语音输入模式下的“按住 说话”按钮 -->
+    <block wx:else>
+      <view 
+        class="voice-record-btn {{recording ? 'active' : ''}}"
+        bindtouchstart="startRecording"
+        bindtouchend="stopRecording"
+        bindtouchcancel="cancelRecording"
+        bindtouchmove="handleTouchMove"
+      >
+        {{recording ? '松开 结束' : '按住 说话'}}
+      </view>
+    </block>
+
+    <view class="send-btn {{inputValue ? 'active' : ''}}" bindtap="sendMsg">发送</view>
+  </view>
+</view>

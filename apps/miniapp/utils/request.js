@@ -1,8 +1,8 @@
 import { tokenManager } from './token';
 
 const envVersion = wx.getAccountInfoSync().miniProgram.envVersion;
-const API_BASE_URL = envVersion === 'develop' 
-  ? 'http://localhost:3456' 
+const API_BASE_URL = envVersion === 'develop'
+  ? 'http://192.168.5.6:3456'
   : 'https://life-toolkit-api.6ys.tech';
 
 /**
