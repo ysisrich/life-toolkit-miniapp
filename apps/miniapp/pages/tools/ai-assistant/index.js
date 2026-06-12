@@ -1,5 +1,4 @@
-import { request } from '../../../utils/request';
-import { tokenManager } from '../../../utils/token';
+import { getAiModels, transcribeAudio, sendChatStream } from '../../../api/ai';
 
 let recorderManager = null;
 let recordStartY = 0; // 记录开始录音时的触摸点Y坐标
@@ -37,7 +36,7 @@ Page({
     this.setData({ navBarHeight });
 
     try {
-      const models = await request.get('/ai/models');
+      const models = await getAiModels();
       if (models && models.length > 0) {
         this.setData({ models, modelIndex: 0 });
       }
@@ -191,44 +190,30 @@ Page({
   // 上传音频并转译
   uploadAudio(tempFilePath) {
     wx.showLoading({ title: '正在识别语音...', mask: true });
-    const token = tokenManager.getToken();
 
-    wx.uploadFile({
-      url: `${request.baseURL}/ai/transcribe`,
-      filePath: tempFilePath,
-      name: 'file',
-      header: {
-        'Authorization': `Bearer ${token}`
-      },
-      success: (res) => {
+    transcribeAudio(tempFilePath)
+      .then((data) => {
         wx.hideLoading();
-        try {
-          const data = JSON.parse(res.data);
-          if (data && data.text) {
-            const newText = data.text.trim();
-            if (newText) {
-              this.setData({
-                inputValue: (this.data.inputValue + ' ' + newText).trim(),
-                inputMode: 'keyboard' // 自动切回键盘方便微调
-              });
-              wx.showToast({ title: '识别成功', icon: 'success' });
-            } else {
-              wx.showToast({ title: '未能识别出文字', icon: 'none' });
-            }
+        if (data && data.text) {
+          const newText = data.text.trim();
+          if (newText) {
+            this.setData({
+              inputValue: (this.data.inputValue + ' ' + newText).trim(),
+              inputMode: 'keyboard' // 自动切回键盘方便微调
+            });
+            wx.showToast({ title: '识别成功', icon: 'success' });
           } else {
-            wx.showToast({ title: '语音识别结果为空', icon: 'none' });
+            wx.showToast({ title: '未能识别出文字', icon: 'none' });
           }
-        } catch (e) {
-          console.error('解析语音识别结果失败', e);
-          wx.showToast({ title: '解析语音结果失败', icon: 'none' });
+        } else {
+          wx.showToast({ title: '语音识别结果为空', icon: 'none' });
         }
-      },
-      fail: (err) => {
+      })
+      .catch((err) => {
         wx.hideLoading();
-        console.error('上传录音文件失败', err);
+        console.error('语音转译请求失败', err);
         wx.showToast({ title: '语音转译请求失败', icon: 'none' });
-      }
-    });
+      });
   },
 
   onInput(e) {
@@ -271,25 +256,16 @@ Page({
       .slice(-10);
 
     const model = this.data.models[this.data.modelIndex].value;
-    const token = tokenManager.getToken();
     
     let accumulatedText = '';
     let buffer = '';
     let assistantMsgIndex = -1;
 
-    const requestTask = wx.request({
-      url: `${request.baseURL}/ai/chat`,
-      method: 'POST',
-      data: {
-        message: content,
-        model,
-        history
-      },
-      header: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      enableChunked: true,
+    sendChatStream({
+      message: content,
+      model,
+      history
+    }, {
       success: (res) => {
         this.setData({ thinking: false });
         this.scrollToBottom();
@@ -307,77 +283,76 @@ Page({
           thinking: false
         });
         this.scrollToBottom();
-      }
-    });
-
-    requestTask.onChunkReceived((chunkRes) => {
-      let str = '';
-      try {
-        if (typeof TextDecoder !== 'undefined') {
-          str = new TextDecoder('utf-8').decode(chunkRes.data);
-        } else {
+      },
+      onChunk: (chunkRes) => {
+        let str = '';
+        try {
+          if (typeof TextDecoder !== 'undefined') {
+            str = new TextDecoder('utf-8').decode(chunkRes.data);
+          } else {
+            const uint8 = new Uint8Array(chunkRes.data);
+            str = String.fromCharCode.apply(null, uint8);
+            str = decodeURIComponent(escape(str));
+          }
+        } catch (err) {
+          console.warn('Decode failed, using fallback:', err);
           const uint8 = new Uint8Array(chunkRes.data);
           str = String.fromCharCode.apply(null, uint8);
-          str = decodeURIComponent(escape(str));
         }
-      } catch (err) {
-        console.warn('Decode failed, using fallback:', err);
-        const uint8 = new Uint8Array(chunkRes.data);
-        str = String.fromCharCode.apply(null, uint8);
-      }
 
-      buffer += str;
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || ''; // 不完整的行留存在 buffer 中下包继续拼接
+        buffer += str;
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || ''; // 不完整的行留存在 buffer 中下包继续拼接
 
-      let textUpdated = false;
-      const list = [...this.data.chatList];
+        let textUpdated = false;
+        const list = [...this.data.chatList];
 
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed) continue;
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed) continue;
 
-        if (trimmed.startsWith('data: ')) {
-          const jsonStr = trimmed.slice(6).trim();
-          try {
-            const parsed = JSON.parse(jsonStr);
-            if (parsed.type === 'text' && parsed.content) {
-              if (this.data.thinking) {
-                this.setData({ thinking: false });
+          if (trimmed.startsWith('data: ')) {
+            const jsonStr = trimmed.slice(6).trim();
+            try {
+              const parsed = JSON.parse(jsonStr);
+              if (parsed.type === 'text' && parsed.content) {
+                if (this.data.thinking) {
+                  this.setData({ thinking: false });
+                }
+                accumulatedText += parsed.content;
+                
+                if (assistantMsgIndex === -1) {
+                  list.push({ role: 'assistant', content: accumulatedText });
+                  assistantMsgIndex = list.length - 1;
+                } else {
+                  list[assistantMsgIndex].content = accumulatedText;
+                }
+                textUpdated = true;
+              } else if (parsed.type === 'action' && parsed.actionExecuted) {
+                if (assistantMsgIndex === -1) {
+                  list.push({
+                    role: 'system_action',
+                    content: '⚙️ 习惯提醒设置或打卡历史已成功由 AI 智能修改保存'
+                  });
+                } else {
+                  list.splice(assistantMsgIndex, 0, {
+                    role: 'system_action',
+                    content: '⚙️ 习惯提醒设置或打卡历史已成功由 AI 智能修改保存'
+                  });
+                  assistantMsgIndex += 1;
+                }
+                textUpdated = true;
               }
-              accumulatedText += parsed.content;
-              
-              if (assistantMsgIndex === -1) {
-                list.push({ role: 'assistant', content: accumulatedText });
-                assistantMsgIndex = list.length - 1;
-              } else {
-                list[assistantMsgIndex].content = accumulatedText;
-              }
-              textUpdated = true;
-            } else if (parsed.type === 'action' && parsed.actionExecuted) {
-              if (assistantMsgIndex === -1) {
-                list.push({
-                  role: 'system_action',
-                  content: '⚙️ 习惯提醒设置或打卡历史已成功由 AI 智能修改保存'
-                });
-              } else {
-                list.splice(assistantMsgIndex, 0, {
-                  role: 'system_action',
-                  content: '⚙️ 习惯提醒设置或打卡历史已成功由 AI 智能修改保存'
-                });
-                assistantMsgIndex += 1;
-              }
-              textUpdated = true;
+            } catch (e) {
+              console.warn('Failed to parse SSE line:', trimmed, e);
             }
-          } catch (e) {
-            console.warn('Failed to parse SSE line:', trimmed, e);
           }
         }
-      }
 
-      if (textUpdated) {
-        this.setData({ chatList: list });
-        this.scrollToBottom();
+        if (textUpdated) {
+          this.setData({ chatList: list });
+          this.scrollToBottom();
+        }
       }
     });
   },
