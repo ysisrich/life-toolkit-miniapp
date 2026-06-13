@@ -1,19 +1,26 @@
 <view class="container">
-  <view class="glow glow-1 {{!isWritten ? 'glow-due' : ''}}"></view>
-  <view class="glow glow-2 {{!isWritten ? 'glow-due' : ''}}"></view>
+  <view class="glow glow-1 {{(!isWritten && !isRestDay) ? 'glow-due' : ''}}"></view>
+  <view class="glow glow-2 {{(!isWritten && !isRestDay) ? 'glow-due' : ''}}"></view>
 
   <custom-nav title="写日报提醒" back="{{true}}" placeholder="{{true}}"></custom-nav>
 
   <view class="main-content">
-    <view class="status-circle {{!isWritten ? 'due-circle' : ''}}" bindtap="recordReport">
-      <view class="circle-inner {{!isWritten ? 'due' : ''}}">
-        <text class="status-icon">{{isWritten ? '✓' : '!'}}</text>
-        <text class="status-text">{{isWritten ? '今日已打卡' : '今天还没写日报'}}</text>
-        <text class="days-label">{{isWritten ? '干得漂亮，准时下班！' : '点击这里记录打卡'}}</text>
+    <view class="status-circle {{(!isWritten && !isRestDay) ? 'due-circle' : ''}}" bindtap="recordReport">
+      <view class="circle-inner {{(!isWritten && !isRestDay) ? 'due' : ''}}">
+        <block wx:if="{{isRestDay}}">
+          <text class="status-icon">🏖️</text>
+          <text class="status-text">今日休息</text>
+          <text class="days-label">周末愉快，好好放松吧！</text>
+        </block>
+        <block wx:else>
+          <text class="status-icon">{{isWritten ? '✓' : '!'}}</text>
+          <text class="status-text">{{isWritten ? '今日已打卡' : '今天还没写日报'}}</text>
+          <text class="days-label">{{isWritten ? '干得漂亮，准时下班！' : '点击这里记录打卡'}}</text>
+        </block>
       </view>
     </view>
     
-    <view class="leave-btn" bindtap="recordLeave" wx:if="{{!isWritten}}">
+    <view class="leave-btn" bindtap="recordLeave" wx:if="{{!isWritten && !isRestDay}}">
       <text>🏖️ 今天请假啦</text>
     </view>
     

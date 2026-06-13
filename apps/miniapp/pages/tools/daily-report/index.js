@@ -9,7 +9,8 @@ Page({
     statusBarHeight: 0,
     isWritten: false,
     showModal: false,
-    reminderTime: '18:00'
+    reminderTime: '18:00',
+    isRestDay: false
   },
 
   async onLoad() {
@@ -29,12 +30,17 @@ Page({
         this.setData({ reminderTime: settings.reminderTime });
       }
 
-      // 2. 加载打卡记录
+      // 2. 判断是否是周末（休息日）
+      const today = dayjs();
+      const dayOfWeek = today.day();
+      const isRestDay = dayOfWeek === 0 || dayOfWeek === 6;
+      this.setData({ isRestDay });
+
+      // 3. 加载打卡记录
       const tasks = await getTasks('daily-report');
       if (tasks && tasks.length > 0) {
         // 判断最后一次打卡是不是今天
         const lastTaskDate = dayjs(tasks[0].createdAt);
-        const today = dayjs();
         if (lastTaskDate.isSame(today, 'day')) {
           this.setData({ isWritten: true });
         } else {
@@ -55,6 +61,10 @@ Page({
   },
 
   async recordReport() {
+    if (this.data.isRestDay) {
+      wx.showToast({ title: '今天休息，不需要打卡哦～', icon: 'none' });
+      return;
+    }
     if (this.data.isWritten) {
       wx.showToast({ title: '今天已经写过啦', icon: 'none' });
       return;
