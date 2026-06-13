@@ -18,6 +18,21 @@
 
       <view class="divider"></view>
 
+      <!-- AI设置 -->
+      <view class="list-item" hover-class="list-item-hover" bindtap="navigateTo" data-url="/pages/settings/ai/index">
+        <view class="item-left">
+          <view class="icon-wrapper bg-green">
+            <image class="icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xMiwzYy0xLjEsMC0yLDAuOS0yLDJzMC45LDIsMiwyczItMC45LDItMlMxMy4xLDMsMTIsM3ogTTEyLDZjLTAuNTUsMC0xLTAuNDUtMS0xczAuNDUtMSwxLTFzMSwwLjQ1LDEsMVMxMi41NSw2LDEyLDZ6IE0xOSwxOWMtMC41NSwwLTEtMC40NS0xLTF2LTRjMC0wLjU1LTAuNDUtMS0xLTFoLTJ2MmgydjNjMCwwLjU1LTAuNDUsMS0xLDFzLTEtMC40NS0xLTF2LTNoLTJ2M2MwLDAuNTUtMC40NSwxLTEsMXMtMS0wLjQ1LTEtMXYtM0g5di0ySDd2MnY0YzAsMC41NS0wLjQ1LDEtMSwxcy0xLTAuNDUtMS0xdi00VjljMC0xLjEsMC45LTIsMi0yaDEwYzEuMSwwLDIsMC45LDIsMnY1djRDMjAsMTguNTUsMTkuNTUsMTksMTksMTl6IE0xNyw5SDd2MmgxMCw5eiIvPjwvc3ZnPg==" />
+          </view>
+          <text class="item-title">AI设置</text>
+        </view>
+        <view class="item-right">
+          <image class="arrow-right" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNCkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNOSAxOGw2LTYtNi02Ii8+PC9zdmc+" />
+        </view>
+      </view>
+
+      <view class="divider"></view>
+
       <!-- 清除缓存 -->
       <view class="list-item" hover-class="list-item-hover" bindtap="clearCache">
         <view class="item-left">

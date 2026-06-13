@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "AI设置",
+  "usingComponents": {
+    "apple-modal": "/components/apple-modal/index"
+  }
+}

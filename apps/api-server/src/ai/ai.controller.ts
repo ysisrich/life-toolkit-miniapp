@@ -10,8 +10,14 @@ export class AiController {
 
   @UseGuards(JwtAuthGuard)
   @Get('models')
-  async getModels() {
-    return this.aiService.getAvailableModels();
+  async getModels(@Request() req) {
+    return this.aiService.getAvailableModels(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('fetch-models')
+  async fetchModels(@Body() body: { baseUrl: string; apiKey: string }) {
+    return this.aiService.fetchModelsDirectly(body.baseUrl, body.apiKey);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -26,7 +32,7 @@ export class AiController {
   @UseGuards(JwtAuthGuard)
   @Post('transcribe')
   @UseInterceptors(FileInterceptor('file'))
-  async transcribe(@UploadedFile() file: any) {
-    return this.aiService.transcribeAudio(file);
+  async transcribe(@Request() req, @UploadedFile() file: any) {
+    return this.aiService.transcribeAudio(req.user.userId, file);
   }
 }

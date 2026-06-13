@@ -9,6 +9,15 @@ export function getAiModels() {
 }
 
 /**
+ * 实时代理获取指定基准地址和Key的AI模型列表
+ * @param {string} baseUrl
+ * @param {string} apiKey
+ */
+export function fetchRemoteModels(baseUrl, apiKey) {
+  return request.post('/ai/fetch-models', { baseUrl, apiKey });
+}
+
+/**
  * 上传音频文件并转译为文本
  * @param {string} tempFilePath 音频临时文件路径
  */
@@ -40,7 +49,7 @@ export function transcribeAudio(tempFilePath) {
  * @param {object} params 请求参数 { message, model, history }
  * @param {object} callbacks 回调函数 { onChunk, success, fail }
  */
-export function sendChatStream({ message, model, history }, { onChunk, success, fail }) {
+export function sendChatStream({ message, model, history, restrictMode }, { onChunk, success, fail }) {
   const token = tokenManager.getToken();
   const requestTask = wx.request({
     url: `${request.baseURL}/ai/chat`,
@@ -48,7 +57,8 @@ export function sendChatStream({ message, model, history }, { onChunk, success, 
     data: {
       message,
       model,
-      history
+      history,
+      restrictMode
     },
     header: {
       'Content-Type': 'application/json',

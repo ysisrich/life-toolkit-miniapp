@@ -4,22 +4,28 @@
   <!-- 顶部遮罩，防止聊天气泡从导航栏和模型栏之间的间隙漏出 -->
   <view class="header-mask" style="height: calc({{navBarHeight}}px + 20rpx);"></view>
 
-  <!-- 顶栏模型切换器 -->
+  <!-- 顶栏模型与限制模式切换器 -->
   <view class="model-bar glass-panel" style="top: {{navBarHeight}}px;">
-    <text class="model-label">当前AI模型：</text>
-    <picker bindchange="onModelChange" value="{{modelIndex}}" range="{{models}}" range-key="name">
-      <view class="model-picker-btn">
-        {{models[modelIndex].name}} <text class="arrow">▼</text>
-      </view>
-    </picker>
+    <view class="model-select-wrapper">
+      <text class="model-label">当前AI模型：</text>
+      <picker bindchange="onModelChange" value="{{modelIndex}}" range="{{models}}" range-key="name">
+        <view class="model-picker-btn">
+          {{models[modelIndex].name}} <text class="arrow">▼</text>
+        </view>
+      </picker>
+    </view>
+    <view class="restrict-toggle-wrapper">
+      <text class="restrict-label">限制模式</text>
+      <switch class="restrict-switch" checked="{{restrictMode}}" color="#30d158" bindchange="onRestrictModeChange" />
+    </view>
   </view>
 
   <!-- 聊天流 -->
   <scroll-view 
     class="chat-scroll" 
     scroll-y 
-    scroll-into-view="{{lastMessageId}}" 
-    scroll-with-animation
+    scroll-top="{{scrollTop}}"
+    scroll-with-animation="{{scrollAnimation}}"
   >
     <view class="chat-container" style="padding-bottom: calc(160rpx + {{keyboardHeight}}px + env(safe-area-inset-bottom));">
       <view 

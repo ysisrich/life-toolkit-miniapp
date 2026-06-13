@@ -5,4 +5,5 @@ export class ChatDto {
     role: 'user' | 'assistant';
     content: string;
   }>;
+  restrictMode?: boolean;
 }

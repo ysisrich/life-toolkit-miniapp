@@ -2,7 +2,8 @@
   "pages": [
     "pages/hub/index",
     "pages/settings/home/index",
-    "pages/settings/notification/index"
+    "pages/settings/notification/index",
+    "pages/settings/ai/index"
   ],
   "subPackages": [
     {

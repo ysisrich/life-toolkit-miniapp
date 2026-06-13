@@ -59,6 +59,10 @@ page {
   background: linear-gradient(135deg, #5AC8FA 0%, #007AFF 100%);
 }
 
+.bg-green {
+  background: linear-gradient(135deg, #30D158 0%, #1C8535 100%);
+}
+
 .bg-red {
   background: linear-gradient(135deg, #FF5E3A 0%, #FF2A68 100%);
 }

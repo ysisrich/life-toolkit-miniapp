@@ -1,0 +1,120 @@
+<view class="container">
+  <custom-nav title="AI设置" back="{{true}}" placeholder="{{true}}"></custom-nav>
+
+  <view class="content">
+    <!-- 当前选中配置卡片 -->
+    <view class="section-title">当前使用中转站</view>
+    <view class="active-card glass-panel" wx:if="{{activeConfig}}">
+      <view class="card-header">
+        <text class="card-name">{{activeConfig.name}}</text>
+        <text class="tag bg-green">使用中</text>
+      </view>
+      <view class="card-info">地址: {{activeConfig.baseUrl}}</view>
+      <view class="card-info">默认模型: {{activeConfig.defaultModel}}</view>
+    </view>
+    <view class="active-card glass-panel empty-active" wx:else>
+      <text>使用系统默认配置（.env）</text>
+    </view>
+
+    <!-- 配置列表 -->
+    <view class="section-title list-header">
+      <text>中转站配置列表</text>
+      <text class="add-btn" bindtap="openAddModal">+ 添加配置</text>
+    </view>
+
+    <view class="config-list">
+      <!-- 系统默认项，不可编辑删除，只能作为切换选项 -->
+      <view class="config-item glass-panel {{!activeConfigId ? 'selected' : ''}}" bindtap="selectConfig" data-id="">
+        <view class="item-main">
+          <view class="item-title-row">
+            <text class="item-name">系统默认配置</text>
+            <icon type="success" size="16" color="#30d158" wx:if="{{!activeConfigId}}" />
+          </view>
+          <text class="item-url">使用服务器环境变量默认配置</text>
+        </view>
+      </view>
+
+      <!-- 自定义列表 -->
+      <view 
+        wx:for="{{configs}}" 
+        wx:key="id" 
+        class="config-item glass-panel {{item.id === activeConfigId ? 'selected' : ''}}" 
+        bindtap="selectConfig" 
+        data-id="{{item.id}}"
+      >
+        <view class="item-main">
+          <view class="item-title-row">
+            <text class="item-name">{{item.name}}</text>
+            <icon type="success" size="16" color="#30d158" wx:if="{{item.id === activeConfigId}}" />
+          </view>
+          <text class="item-url">{{item.baseUrl}}</text>
+          <text class="item-model">默认模型: {{item.defaultModel}}</text>
+        </view>
+        <view class="item-actions">
+          <view class="action-icon edit-icon" catchtap="openEditModal" data-index="{{index}}">
+            <image src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMGE4NGZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDIwSDIxTTExIDRsOC41IDguNUwxMSAxNEg2djVoNC41TDE5IDEwIi8+PC9zdmc+" class="btn-svg"></image>
+          </view>
+          <view class="action-icon delete-icon" catchtap="deleteConfig" data-index="{{index}}">
+            <image src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmY0NTMwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE5IDRIMS41TDE0LjUgM0g5LjVMOC41IDRINVY2SDE5TTYgMTlWM0g2djE0Ii8+PC9zdmc+" class="btn-svg"></image>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 添加/编辑弹窗 -->
+  <apple-modal show="{{showModal}}" bind:close="closeModal">
+    <view class="form-container">
+      <view class="modal-title">{{editIndex === -1 ? '添加中转站' : '编辑中转站'}}</view>
+      
+      <view class="form-item">
+        <text class="label">中转站名称</text>
+        <input class="input" placeholder="输入名称, 例如 DeepSeek中转" value="{{form.name}}" bindinput="onFormInput" data-field="name" />
+      </view>
+
+      <view class="form-item">
+        <text class="label">接口基准地址 (Base URL)</text>
+        <input class="input" placeholder="https://api.openai.com/v1" value="{{form.baseUrl}}" bindinput="onFormInput" data-field="baseUrl" />
+      </view>
+
+      <view class="form-item">
+        <text class="label">API Key</text>
+        <input class="input" placeholder="sk-..." password value="{{form.apiKey}}" bindinput="onFormInput" data-field="apiKey" />
+      </view>
+
+      <view class="form-item">
+        <text class="label">默认模型 (Default Model)</text>
+        <view class="input-with-action">
+          <input class="input" placeholder="deepseek-chat" value="{{form.defaultModel}}" bindinput="onFormInput" data-field="defaultModel" />
+          <view class="action-btn" bindtap="fetchRemoteModels">
+            <image class="action-icon {{loadingModels ? 'rotating' : ''}}" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMGE4NGZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTcgMTBsNSA1IDUtNSIvPjwvc3ZnPg==" />
+          </view>
+        </view>
+        
+        <!-- 实时拉取的模型下拉选择框 -->
+        <scroll-view scroll-y class="dropdown-list glass-panel" wx:if="{{showModelDropdown && modelOptions.length > 0}}">
+          <view 
+            class="dropdown-item" 
+            wx:for="{{modelOptions}}" 
+            wx:key="value" 
+            bindtap="selectModelOption" 
+            data-value="{{item.value}}"
+          >
+            <text class="option-name">{{item.value}}</text>
+            <icon type="success" size="14" color="#30d158" wx:if="{{form.defaultModel === item.value}}" />
+          </view>
+        </scroll-view>
+      </view>
+
+      <view class="form-item">
+        <text class="label">可用模型列表 (英文逗号及冒号分隔)</text>
+        <textarea class="textarea" placeholder="例: DeepSeek-Chat:deepseek-chat,GPT-4o:gpt-4o" value="{{form.models}}" bindinput="onFormInput" data-field="models" />
+      </view>
+
+      <view class="btn-group">
+        <view class="btn cancel-btn" bindtap="closeModal">取消</view>
+        <view class="btn save-btn" bindtap="saveForm">保存</view>
+      </view>
+    </view>
+  </apple-modal>
+</view>

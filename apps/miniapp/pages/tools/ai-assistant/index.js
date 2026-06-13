@@ -2,6 +2,7 @@ import { getAiModels, transcribeAudio, sendChatStream } from '../../../api/ai';
 
 let recorderManager = null;
 let recordStartY = 0; // 记录开始录音时的触摸点Y坐标
+let lastScrollTime = 0; // 用于滚动节流
 
 Page({
   data: {
@@ -19,7 +20,7 @@ Page({
     ],
     inputValue: '',
     thinking: false,
-    lastMessageId: '',
+    scrollTop: 0,
     
     // AI 助手功能增强所需状态
     keyboardHeight: 0,
@@ -27,7 +28,9 @@ Page({
     recording: false,
     recordingTip: '手指上滑，取消发送',
     isCancelled: false, // 是否取消录音
-    navBarHeight: 0
+    navBarHeight: 0,
+    restrictMode: true,
+    scrollAnimation: true
   },
 
   async onLoad() {
@@ -35,6 +38,15 @@ Page({
     const navBarHeight = app.globalData.navBarHeight || 80;
     this.setData({ navBarHeight });
 
+    // 初始化录音管理器
+    this.initRecorder();
+  },
+
+  onShow() {
+    this.loadModels();
+  },
+
+  async loadModels() {
     try {
       const models = await getAiModels();
       if (models && models.length > 0) {
@@ -43,9 +55,6 @@ Page({
     } catch (e) {
       console.error('获取AI模型列表失败', e);
     }
-
-    // 初始化录音管理器
-    this.initRecorder();
   },
 
   initRecorder() {
@@ -224,6 +233,21 @@ Page({
     this.setData({ modelIndex: parseInt(e.detail.value) });
   },
 
+  onRestrictModeChange(e) {
+    const restrictMode = e.detail.value;
+    this.setData({ restrictMode });
+    
+    const newChatList = [
+      {
+        role: 'assistant',
+        content: restrictMode 
+          ? '主人您好！我是您的智能生活助手。您可以向我咨询健康与习惯常识，或者对我说“理发打卡”、“把剪指甲提醒改为每15天一次”等直接修改打卡状态或提醒设置。'
+          : '您好！我是您的人工智能助手。现在我们已进入自由对话模式，我可以为您解答各种问题、提供建议或进行各种话题的闲聊。'
+      }
+    ];
+    this.setData({ chatList: newChatList });
+  },
+
   // 键盘聚焦
   onFocus(e) {
     const { height } = e.detail;
@@ -246,7 +270,8 @@ Page({
     this.setData({
       chatList: newChatList,
       inputValue: '',
-      thinking: true
+      thinking: true,
+      scrollAnimation: true
     });
     this.scrollToBottom();
 
@@ -264,10 +289,14 @@ Page({
     sendChatStream({
       message: content,
       model,
-      history
+      history,
+      restrictMode: this.data.restrictMode
     }, {
       success: (res) => {
-        this.setData({ thinking: false });
+        this.setData({ 
+          thinking: false,
+          scrollAnimation: true
+        });
         this.scrollToBottom();
       },
       fail: (err) => {
@@ -280,7 +309,8 @@ Page({
         }
         this.setData({
           chatList: list,
-          thinking: false
+          thinking: false,
+          scrollAnimation: true
         });
         this.scrollToBottom();
       },
@@ -350,20 +380,27 @@ Page({
         }
 
         if (textUpdated) {
-          this.setData({ chatList: list });
-          this.scrollToBottom();
+          this.setData({ 
+            chatList: list,
+            scrollAnimation: false
+          });
+          this.throttleScroll();
         }
       }
     });
   },
 
+  throttleScroll() {
+    const now = Date.now();
+    if (now - lastScrollTime > 200) {
+      lastScrollTime = now;
+      this.scrollToBottom();
+    }
+  },
+
   scrollToBottom() {
-    const lastIndex = this.data.chatList.length - 1;
-    // 延时滚动，确保视图已经渲染完毕
-    setTimeout(() => {
-      this.setData({
-        lastMessageId: `msg-${lastIndex}`
-      });
-    }, 100);
+    this.setData({
+      scrollTop: 99999 + Math.random()
+    });
   }
 });

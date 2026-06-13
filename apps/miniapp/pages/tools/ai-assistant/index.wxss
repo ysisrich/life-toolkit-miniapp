@@ -36,6 +36,29 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
+.model-select-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.restrict-toggle-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.restrict-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.4);
+  margin-right: 12rpx;
+}
+
+.restrict-switch {
+  transform: scale(0.72);
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+}
+
 .model-picker-btn {
   font-size: 24rpx;
   color: #30d158;
