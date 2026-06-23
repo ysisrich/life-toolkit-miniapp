@@ -43,3 +43,4 @@ pnpm-debug.log*
 .turbo/
 *.db
 .agent/
+.understand-anything/

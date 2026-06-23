@@ -209,3 +209,20 @@
 .leave-num {
   color: #ff9f0a;
 }
+
+.calendar-cell.is-miss {
+  background: rgba(255, 69, 58, 0.1);
+  border: 1px solid rgba(255, 69, 58, 0.3);
+}
+
+.miss-text {
+  position: absolute;
+  bottom: 8rpx;
+  font-size: 20rpx;
+  color: #ff453a;
+}
+
+.miss-num {
+  color: #ff453a;
+}
+

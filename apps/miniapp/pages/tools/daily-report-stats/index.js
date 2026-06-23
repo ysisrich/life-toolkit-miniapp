@@ -50,9 +50,11 @@ Page({
 
     let punchCount = 0;
     let leaveCount = 0;
+    let missCount = 0;
 
     const records = (this.data.stats && this.data.stats.records) || {};
     const holidays = (this.data.stats && this.data.stats.holidays) || {};
+    const todayStr = dayjs().format('YYYY-MM-DD');
 
     for (let i = 1; i <= daysInMonth; i++) {
       const dateStr = `${year}-${monthStr}-${i.toString().padStart(2, '0')}`;
@@ -66,12 +68,24 @@ Page({
       const dayOfWeek = dayjs(dateStr).day();
       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
+      let isWorkday = false;
+      if (holidayInfo) {
+        isWorkday = !holidayInfo.holiday;
+      } else {
+        isWorkday = !isWeekend;
+      }
+
+      const isPast = dateStr < todayStr;
+      const isMiss = isPast && isWorkday && !isRecord;
+
       if (isRecord) {
         if (isLeave) {
           leaveCount++;
         } else {
           punchCount++;
         }
+      } else if (isMiss) {
+        missCount++;
       }
 
       calendarDays.push({
@@ -79,12 +93,13 @@ Page({
         dateStr,
         isRecord,
         isLeave,
+        isMiss,
         isWeekend,
         holidayInfo
       });
     }
 
-    this.setData({ calendarDays, punchCount, leaveCount });
+    this.setData({ calendarDays, punchCount, leaveCount, missCount });
   },
 
   prevMonth() {

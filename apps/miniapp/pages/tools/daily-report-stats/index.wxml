@@ -6,6 +6,7 @@
       <view class="stats-summary">
         <text class="stat-item">打卡: <text class="stat-num">{{punchCount}}</text> 天</text>
         <text class="stat-item">请假: <text class="stat-num leave-num">{{leaveCount}}</text> 天</text>
+        <text class="stat-item">未打卡: <text class="stat-num miss-num">{{missCount}}</text> 天</text>
       </view>
 
       <view class="calendar-header">
@@ -27,7 +28,7 @@
       </view>
       <view class="calendar-grid">
         <view 
-          class="calendar-cell {{item.empty ? 'empty' : ''}} {{item.isRecord && !item.isLeave ? 'is-record' : ''}} {{item.isLeave ? 'is-leave' : ''}} {{item.isWeekend ? 'is-weekend' : ''}} {{item.holidayInfo && item.holidayInfo.holiday ? 'is-holiday' : ''}} {{item.holidayInfo && !item.holidayInfo.holiday ? 'is-workday' : ''}}" 
+          class="calendar-cell {{item.empty ? 'empty' : ''}} {{item.isRecord && !item.isLeave ? 'is-record' : ''}} {{item.isLeave ? 'is-leave' : ''}} {{item.isMiss ? 'is-miss' : ''}} {{item.isWeekend ? 'is-weekend' : ''}} {{item.holidayInfo && item.holidayInfo.holiday ? 'is-holiday' : ''}} {{item.holidayInfo && !item.holidayInfo.holiday ? 'is-workday' : ''}}" 
           wx:for="{{calendarDays}}" 
           wx:key="index"
         >
@@ -42,6 +43,7 @@
 
           <view wx:if="{{item.isRecord && !item.isLeave}}" class="record-dot"></view>
           <text wx:if="{{item.isLeave}}" class="leave-text">假</text>
+          <text wx:if="{{item.isMiss}}" class="miss-text">漏</text>
         </view>
       </view>
     </view>
