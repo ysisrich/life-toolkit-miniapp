@@ -181,6 +181,12 @@ export class TasksService {
         // If it's not time yet, skip
         if (nowObj.isBefore(reminderDateObj)) continue;
 
+        // 检查今天用户是否手动取消了提醒
+        if (data.cancelReminderDate === nowObj.format('YYYY-MM-DD')) {
+          this.logger.log(`User ${setting.userId} has cancelled reminders for today, skipping.`);
+          continue;
+        }
+
         // Check if we already pushed today. We can store this in settingData or check TaskRecord
         // But better: check if they already WROTE the report today
         const startOfDay = nowObj.startOf('day').toDate();
