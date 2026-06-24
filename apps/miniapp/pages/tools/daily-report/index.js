@@ -10,7 +10,8 @@ Page({
     isWritten: false,
     showModal: false,
     reminderTime: '18:00',
-    isRestDay: false
+    isRestDay: false,
+    isReminderCancelled: false
   },
 
   async onLoad() {
@@ -26,12 +27,16 @@ Page({
     try {
       // 1. 加载用户设置
       const settings = await getToolSettings('daily-report');
-      if (settings && settings.reminderTime) {
-        this.setData({ reminderTime: settings.reminderTime });
-      }
+      const today = dayjs();
+      const todayStr = today.format('YYYY-MM-DD');
+      const isReminderCancelled = !!(settings && settings.cancelReminderDate === todayStr);
+
+      this.setData({ 
+        reminderTime: (settings && settings.reminderTime) || '18:00',
+        isReminderCancelled
+      });
 
       // 2. 判断是否是周末（休息日）
-      const today = dayjs();
       const dayOfWeek = today.day();
       const isRestDay = dayOfWeek === 0 || dayOfWeek === 6;
       this.setData({ isRestDay });
@@ -77,6 +82,14 @@ Page({
           await recordTask('daily-report', { note: '完成写日报打卡' });
           this.setData({ isWritten: true });
           wx.showToast({ title: '打卡成功！', icon: 'success' });
+          
+          // 打卡成功后，自动清理取消提醒的状态，确保数据一致性
+          try {
+            await updateToolSettings('daily-report', { cancelReminderDate: null });
+            this.setData({ isReminderCancelled: false });
+          } catch (e) {
+            console.error('静默清理取消提醒配置失败', e);
+          }
         } catch (e) {
           wx.showToast({ title: '打卡失败', icon: 'error' });
         }
@@ -104,6 +117,26 @@ Page({
         }
       }
     });
+  },
+
+  async toggleTodayReminder() {
+    if (this.data.isWritten || this.data.isRestDay) return;
+
+    const todayStr = dayjs().format('YYYY-MM-DD');
+    const nextState = !this.data.isReminderCancelled;
+    
+    try {
+      await updateToolSettings('daily-report', {
+        cancelReminderDate: nextState ? todayStr : null
+      });
+      this.setData({ isReminderCancelled: nextState });
+      wx.showToast({
+        title: nextState ? '已取消今日提醒' : '已恢复今日提醒',
+        icon: 'success'
+      });
+    } catch (e) {
+      wx.showToast({ title: '操作失败', icon: 'none' });
+    }
   },
 
   openSettings() {
