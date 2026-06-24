@@ -256,4 +256,30 @@
   height: 40rpx;
 }
 
+.cancel-btn {
+  margin-top: 20rpx;
+  margin-bottom: 40rpx;
+  padding: 20rpx 40rpx;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FF9F0A;
+  font-size: 28rpx;
+  border: 1px solid rgba(255, 159, 10, 0.2);
+  transition: all 0.3s ease;
+}
+
+.cancel-btn.cancelled {
+  color: #8E8E93;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.cancel-btn:active {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(0.98);
+}
+
 

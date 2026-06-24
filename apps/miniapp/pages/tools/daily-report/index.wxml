@@ -23,6 +23,10 @@
     <view class="leave-btn" bindtap="recordLeave" wx:if="{{!isWritten && !isRestDay}}">
       <text>🏖️ 今天请假啦</text>
     </view>
+
+    <view class="cancel-btn {{isReminderCancelled ? 'cancelled' : ''}}" bindtap="toggleTodayReminder" wx:if="{{!isWritten && !isRestDay}}">
+      <text>{{isReminderCancelled ? '🔔 恢复今日提醒' : '🚫 今日取消提醒'}}</text>
+    </view>
     
     <view class="action-btn glass-panel" bindtap="openSettings">
       <text>提醒设置 (当前: {{reminderTime}})</text>
