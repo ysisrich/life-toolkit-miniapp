@@ -22,13 +22,17 @@ export class SettingsService {
 
   async saveSetting(userId: number, toolKey: string, data: any) {
     let setting = await this.settingsRepository.findOne({ where: { userId, toolKey } });
-    const settingData = JSON.stringify(data);
+    let finalData = data;
     
     if (setting) {
-      setting.settingData = settingData;
+      try {
+        const oldData = JSON.parse(setting.settingData);
+        finalData = { ...oldData, ...data };
+      } catch {}
+      setting.settingData = JSON.stringify(finalData);
       setting.updatedAt = new Date();
     } else {
-      setting = this.settingsRepository.create({ userId, toolKey, settingData });
+      setting = this.settingsRepository.create({ userId, toolKey, settingData: JSON.stringify(finalData) });
     }
     
     await this.settingsRepository.save(setting);
