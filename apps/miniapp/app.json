@@ -2,8 +2,7 @@
   "pages": [
     "pages/hub/index",
     "pages/settings/home/index",
-    "pages/settings/notification/index",
-    "pages/settings/ai/index"
+    "pages/settings/notification/index"
   ],
   "subPackages": [
     {
@@ -13,8 +12,7 @@
         "nail-clipper/index",
         "daily-report/index",
         "daily-report-stats/index",
-        "haircut/index",
-        "ai-assistant/index"
+        "haircut/index"
       ]
     }
   ],
