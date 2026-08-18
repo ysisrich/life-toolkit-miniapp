@@ -5,6 +5,7 @@ import { UserSetting } from '../user-settings.entity';
 import { TaskRecord } from '../task-record.entity';
 import { WechatService } from '../wechat/wechat.service';
 import dayjs from 'dayjs';
+import { ConflictException } from '@nestjs/common';
 
 describe('TasksService - Daily Report Filter', () => {
   let service: TasksService;
@@ -19,6 +20,10 @@ describe('TasksService - Daily Report Filter', () => {
     };
     taskRecordRepoMock = {
       findOne: jest.fn(),
+      find: jest.fn(),
+      create: jest.fn((data) => ({ id: 7, ...data })),
+      save: jest.fn(),
+      remove: jest.fn(),
     };
     wechatServiceMock = {
       sendSubscribeMessage: jest.fn(),
@@ -58,5 +63,54 @@ describe('TasksService - Daily Report Filter', () => {
     await service.handleDailyReportReminders();
 
     expect(wechatServiceMock.sendSubscribeMessage).not.toHaveBeenCalled();
+  });
+
+  it('should create a daily report record on the supplemented date', async () => {
+    const date = dayjs().subtract(1, 'day').format('YYYY-MM-DD');
+    taskRecordRepoMock.findOne.mockResolvedValue(null);
+
+    await expect(service.supplementDailyReport(1, 'daily-report', date)).resolves.toEqual({
+      success: true,
+      id: 7,
+      date,
+    });
+
+    expect(dayjs(taskRecordRepoMock.create.mock.calls[0][0].createdAt).format('YYYY-MM-DD')).toBe(date);
+    expect(taskRecordRepoMock.save).toHaveBeenCalledTimes(1);
+  });
+
+  it('should reject supplementing an existing record', async () => {
+    const date = dayjs().subtract(1, 'day').format('YYYY-MM-DD');
+    taskRecordRepoMock.findOne.mockResolvedValue({ id: 1 });
+
+    await expect(service.supplementDailyReport(1, 'daily-report', date)).rejects.toBeInstanceOf(
+      ConflictException,
+    );
+    expect(taskRecordRepoMock.save).not.toHaveBeenCalled();
+  });
+
+  it('should remove the old record when an overtime date is moved', async () => {
+    const oldDate = dayjs().subtract(2, 'day').format('YYYY-MM-DD');
+    const newDate = dayjs().subtract(1, 'day').format('YYYY-MM-DD');
+    const oldRecord = {
+      id: 7,
+      userId: 1,
+      toolKey: 'overtime',
+      taskData: JSON.stringify({ type: 'overtime', date: oldDate, hours: 1 })
+    };
+
+    taskRecordRepoMock.findOne.mockResolvedValueOnce(oldRecord);
+    taskRecordRepoMock.find.mockResolvedValue([]);
+    taskRecordRepoMock.create.mockReturnValueOnce({ id: 8, userId: 1, toolKey: 'overtime' });
+    taskRecordRepoMock.save.mockResolvedValueOnce({ id: 8 });
+
+    await service.saveOvertimeRecord(1, {
+      id: 7,
+      type: 'overtime',
+      date: newDate,
+      hours: 2
+    });
+
+    expect(taskRecordRepoMock.remove).toHaveBeenCalledWith(oldRecord);
   });
 });

@@ -1,0 +1,123 @@
+<view class="container">
+  <custom-nav title="加班统计" back="{{true}}" placeholder="{{true}}"></custom-nav>
+
+  <view class="main-content">
+    <view class="summary-panel glass-panel">
+      <view class="balance-row">
+        <view>
+          <text class="eyebrow">累计剩余</text>
+          <text class="balance-value {{ledger.balance < 0 ? 'negative' : ''}}">{{ledger.balance}}<text class="unit">小时</text></text>
+        </view>
+      </view>
+      <view class="metric-grid">
+        <view class="metric-item">
+          <text class="metric-label">本月加班</text>
+          <text class="metric-value overtime-value">+{{ledger.monthOvertime}}h</text>
+        </view>
+        <view class="metric-item">
+          <text class="metric-label">请假抵扣</text>
+          <text class="metric-value leave-value">-{{ledger.monthLeave}}h</text>
+        </view>
+        <view class="metric-item">
+          <text class="metric-label">本月净增</text>
+          <text class="metric-value {{ledger.monthNet < 0 ? 'negative' : ''}}">{{ledger.monthNet}}h</text>
+        </view>
+      </view>
+      <view wx:if="{{!showTodayBtn}}" class="today-row">
+        <view class="today-copy">
+          <text class="today-title">今日加班</text>
+          <text class="today-status">{{todayOvertime ? '已记录，点击可修改' : '未记录'}}</text>
+        </view>
+        <switch checked="{{todayOvertime}}" color="#30D158" bindchange="onTodayToggle"></switch>
+      </view>
+    </view>
+
+    <view class="toolbar">
+      <view class="toolbar-btn" bindtap="importLedger"><text>导入</text></view>
+      <view class="toolbar-btn" bindtap="exportLedger"><text>导出 TXT</text></view>
+    </view>
+
+    <view class="calendar-panel glass-panel">
+      <view class="calendar-header">
+        <view class="month-btn" bindtap="prevMonth"><text>◀</text></view>
+        <view class="month-title-container">
+          <text class="month-title">{{currentYear}}年 {{currentMonth}}月</text>
+          <text wx:if="{{showTodayBtn}}" class="today-btn" bindtap="backToToday">回到今日</text>
+        </view>
+        <view class="month-btn" bindtap="nextMonth"><text>▶</text></view>
+      </view>
+      <view class="calendar-weekdays">
+        <text class="weekday weekend">日</text>
+        <text class="weekday">一</text>
+        <text class="weekday">二</text>
+        <text class="weekday">三</text>
+        <text class="weekday">四</text>
+        <text class="weekday">五</text>
+        <text class="weekday weekend">六</text>
+      </view>
+      <view class="calendar-grid">
+        <view
+          wx:for="{{calendarDays}}"
+          wx:key="index"
+          class="calendar-cell {{item.empty ? 'empty' : ''}} {{item.isToday ? 'is-today' : ''}} {{item.isFuture ? 'is-future' : ''}}"
+          data-date="{{item.dateStr}}"
+          bindtap="onDayTap"
+          hover-class="{{item.empty || item.isFuture ? 'none' : 'calendar-cell-active'}}"
+        >
+          <text wx:if="{{!item.empty}}" class="day-num">{{item.day}}</text>
+          <text wx:if="{{item.overtimeText}}" class="hours-text overtime-text">{{item.overtimeText}}</text>
+          <text wx:if="{{item.leaveText}}" class="hours-text leave-text">{{item.leaveText}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <apple-modal show="{{showEditor}}" bind:close="closeEditor">
+    <view class="editor-content">
+      <view class="editor-header">
+        <text class="editor-title">编辑 {{editingDate}}</text>
+        <text class="editor-close" bindtap="closeEditor">×</text>
+      </view>
+
+      <view class="type-tabs">
+        <view class="type-tab {{editingType === 'overtime' ? 'active' : ''}}" data-type="overtime" bindtap="selectType">加班</view>
+        <view class="type-tab {{editingType === 'leave' ? 'active leave-active' : ''}}" data-type="leave" bindtap="selectType">请假</view>
+      </view>
+
+      <picker mode="date" value="{{editingDate}}" end="{{todayDate}}" bindchange="onEditDateChange">
+        <view class="editor-row">
+          <text>日期</text>
+          <text class="editor-value">{{editingDate}} ›</text>
+        </view>
+      </picker>
+
+      <view class="editor-row input-row">
+        <text>小时数</text>
+        <view class="hours-input-wrap">
+          <input type="digit" value="{{editHours}}" maxlength="5" bindinput="onHoursInput" />
+          <text>小时</text>
+        </view>
+      </view>
+
+      <block wx:if="{{editingType === 'overtime'}}">
+        <picker mode="time" value="{{editStartTime}}" bindchange="onStartTimeChange">
+          <view class="editor-row">
+            <text>开始时间</text>
+            <text class="editor-value">{{editStartTime || '未设置'}} ›</text>
+          </view>
+        </picker>
+        <picker mode="time" value="{{editEndTime}}" bindchange="onEndTimeChange">
+          <view class="editor-row">
+            <text>结束时间</text>
+            <text class="editor-value">{{editEndTime || '未设置'}} ›</text>
+          </view>
+        </picker>
+      </block>
+
+      <view class="editor-actions">
+        <view wx:if="{{editingId}}" class="editor-btn delete-btn" bindtap="deleteEditing">删除</view>
+        <view class="editor-btn save-btn" bindtap="saveEditor">保存</view>
+      </view>
+    </view>
+  </apple-modal>
+</view>

@@ -1,0 +1,333 @@
+.container {
+  min-height: 100vh;
+  background: #000;
+  color: #fff;
+}
+
+.main-content {
+  padding: 36rpx 24rpx 100rpx;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+}
+
+.summary-panel {
+  padding: 34rpx;
+  border-radius: 28rpx;
+}
+
+.balance-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 28rpx;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.eyebrow,
+.metric-label,
+.today-status {
+  display: block;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 22rpx;
+}
+
+.balance-value {
+  display: block;
+  margin-top: 8rpx;
+  color: #30d158;
+  font-size: 68rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.balance-value.negative,
+.metric-value.negative {
+  color: #ff453a;
+}
+
+.unit {
+  margin-left: 8rpx;
+  font-size: 26rpx;
+  font-weight: 400;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx;
+  padding: 28rpx 0;
+}
+
+.metric-item {
+  min-width: 0;
+}
+
+.metric-value {
+  display: block;
+  margin-top: 8rpx;
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.overtime-value {
+  color: #30d158;
+}
+
+.leave-value {
+  color: #ff9f0a;
+}
+
+.today-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 24rpx;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.today-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.today-status {
+  margin-top: 6rpx;
+}
+
+.toolbar {
+  display: flex;
+  gap: 18rpx;
+  margin: 24rpx 0;
+}
+
+.toolbar-btn {
+  flex: 1;
+  padding: 22rpx 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18rpx;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.06);
+  text-align: center;
+  font-size: 28rpx;
+}
+
+.toolbar-btn:active,
+.calendar-cell-active {
+  background: rgba(10, 132, 255, 0.2) !important;
+  transform: scale(0.97);
+}
+
+.calendar-panel {
+  padding: 28rpx 20rpx 32rpx;
+  border-radius: 28rpx;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28rpx;
+}
+
+.month-title-container {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.month-title {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.month-btn {
+  padding: 10rpx 18rpx;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 26rpx;
+}
+
+.today-btn {
+  padding: 6rpx 14rpx;
+  border: 1px solid rgba(48, 209, 88, 0.3);
+  border-radius: 18rpx;
+  color: #30d158;
+  font-size: 20rpx;
+}
+
+.calendar-weekdays,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8rpx;
+}
+
+.calendar-weekdays {
+  margin-bottom: 10rpx;
+  text-align: center;
+}
+
+.weekday {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 22rpx;
+}
+
+.weekday.weekend {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.calendar-cell {
+  min-height: 116rpx;
+  padding: 12rpx 4rpx 8rpx;
+  border: 1px solid transparent;
+  border-radius: 14rpx;
+  background: rgba(255, 255, 255, 0.025);
+  text-align: center;
+}
+
+.calendar-cell.empty {
+  background: transparent;
+}
+
+.calendar-cell.is-today {
+  border-color: rgba(10, 132, 255, 0.7);
+  background: rgba(10, 132, 255, 0.12);
+}
+
+.calendar-cell.is-future {
+  opacity: 0.35;
+}
+
+.day-num {
+  display: block;
+  color: #fff;
+  font-size: 26rpx;
+}
+
+.hours-text {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 20rpx;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.overtime-text {
+  color: #30d158;
+}
+
+.leave-text {
+  margin-top: 6rpx;
+  color: #ff9f0a;
+}
+
+.editor-content {
+  padding: 12rpx 36rpx 50rpx;
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 34rpx;
+}
+
+.editor-title {
+  font-size: 38rpx;
+  font-weight: 700;
+}
+
+.editor-close {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 50rpx;
+  line-height: 1;
+}
+
+.type-tabs {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+  padding: 6rpx;
+  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.type-tab {
+  flex: 1;
+  padding: 18rpx 0;
+  border-radius: 12rpx;
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  font-size: 28rpx;
+}
+
+.type-tab.active {
+  color: #30d158;
+  background: rgba(48, 209, 88, 0.16);
+}
+
+.type-tab.leave-active {
+  color: #ff9f0a;
+  background: rgba(255, 159, 10, 0.16);
+}
+
+.editor-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 86rpx;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 30rpx;
+}
+
+.editor-value {
+  color: #0a84ff;
+}
+
+.input-row {
+  min-height: 100rpx;
+}
+
+.hours-input-wrap {
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.hours-input-wrap input {
+  width: 150rpx;
+  margin-right: 10rpx;
+  color: #fff;
+  font-size: 34rpx;
+  text-align: right;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 18rpx;
+  margin-top: 38rpx;
+}
+
+.editor-btn {
+  flex: 1;
+  padding: 24rpx 0;
+  border-radius: 18rpx;
+  text-align: center;
+  font-size: 30rpx;
+}
+
+.delete-btn {
+  color: #ff453a;
+  background: rgba(255, 69, 58, 0.12);
+}
+
+.save-btn {
+  color: #fff;
+  background: #0a84ff;
+}

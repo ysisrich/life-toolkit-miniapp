@@ -1,4 +1,4 @@
-import { getToolStats } from '../../../api/tasks';
+import { getToolStats, supplementTask } from '../../../api/tasks';
 import dayjs from 'dayjs';
 
 Page({
@@ -63,6 +63,7 @@ Page({
       const record = records[dateStr];
       const isRecord = !!record;
       const isLeave = record && record.isLeave;
+      const isSupplement = record && record.isSupplement;
       const holidayInfo = holidays[shortDateStr];
       
       const dayOfWeek = dayjs(dateStr).day();
@@ -93,6 +94,7 @@ Page({
         dateStr,
         isRecord,
         isLeave,
+        isSupplement,
         isMiss,
         isWeekend,
         holidayInfo
@@ -156,5 +158,39 @@ Page({
     this.updateTodayBtnState(currentYear, currentMonth);
     this.generateCalendar(currentYear, currentMonth);
     this.fetchMonthStats(currentYear, currentMonth);
+  },
+
+  supplementReport(e) {
+    const { date } = e.currentTarget.dataset;
+    const target = this.data.calendarDays.find((item) => item.dateStr === date);
+    if (!target || !target.isMiss || this.supplementing) return;
+
+    wx.showModal({
+      title: '补签日报',
+      content: `确定补签 ${dayjs(date).format('M月D日')} 的日报吗？`,
+      confirmText: '补签',
+      confirmColor: '#30D158',
+      success: (res) => {
+        if (res.confirm) this.submitSupplement(date);
+      }
+    });
+  },
+
+  async submitSupplement(date) {
+    this.supplementing = true;
+    wx.showLoading({ title: '补签中' });
+    let succeeded = false;
+    try {
+      await supplementTask('daily-report', date);
+      await this.fetchMonthStats(this.data.currentYear, this.data.currentMonth);
+      succeeded = true;
+    } catch (e) {
+      console.error('补签失败', e);
+      if (!e || !e.msg) wx.showToast({ title: '补签失败', icon: 'none' });
+    } finally {
+      this.supplementing = false;
+      wx.hideLoading();
+      if (succeeded) wx.showToast({ title: '补签成功', icon: 'success' });
+    }
   }
 });

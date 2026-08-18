@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Request, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Request, Logger } from '@nestjs/common';
 import dayjs from 'dayjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -20,6 +20,40 @@ export class TasksController {
     private wechatService: WechatService,
     private tasksService: TasksService,
   ) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get('overtime/ledger')
+  async getOvertimeLedger(@Request() req) {
+    const year = parseInt(req.query.year) || new Date().getFullYear();
+    const month = parseInt(req.query.month) || (new Date().getMonth() + 1);
+    return this.tasksService.getOvertimeLedger(req.user.userId, year, month);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('overtime/record')
+  async saveOvertimeRecord(@Request() req, @Body() body: any) {
+    return this.tasksService.saveOvertimeRecord(req.user.userId, body);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('overtime/record/:id')
+  async deleteOvertimeRecord(@Request() req, @Param('id') id: string) {
+    return this.tasksService.deleteOvertimeRecord(req.user.userId, id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('overtime/import')
+  async importOvertimeLedger(@Request() req, @Body('content') content: string) {
+    return this.tasksService.importOvertimeLedger(req.user.userId, content);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('overtime/export')
+  async exportOvertimeLedger(@Request() req) {
+    const year = parseInt(req.query.year) || new Date().getFullYear();
+    const month = parseInt(req.query.month) || (new Date().getMonth() + 1);
+    return this.tasksService.exportOvertimeLedger(req.user.userId, year, month);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get(':toolKey/stats')
@@ -49,6 +83,12 @@ export class TasksController {
     });
     await this.taskRecordRepository.save(task);
     return { success: true, id: task.id };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':toolKey/supplement')
+  async supplementTask(@Request() req, @Param('toolKey') toolKey: string, @Body('date') date: string) {
+    return this.tasksService.supplementDailyReport(req.user.userId, toolKey, date);
   }
 
   @Get()

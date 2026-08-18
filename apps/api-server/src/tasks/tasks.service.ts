@@ -1,11 +1,17 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between } from 'typeorm';
+import { Between, LessThanOrEqual, Repository } from 'typeorm';
 import { UserSetting } from '../user-settings.entity';
 import { TaskRecord } from '../task-record.entity';
 import { WechatService } from '../wechat/wechat.service';
+import {
+  calculateOvertimeBalance,
+  formatOvertimeText,
+  OvertimeEntry,
+  parseOvertimeText,
+} from './overtime-ledger';
 
 @Injectable()
 export class TasksService {
@@ -287,7 +293,8 @@ export class TasksService {
       
       // 记录当天是否有打卡，以及是否是“请假”
       recordMap[dateStr] = {
-        isLeave: data.type === 'leave'
+        isLeave: data.type === 'leave',
+        isSupplement: data.type === 'supplement'
       };
     }
 
@@ -323,5 +330,262 @@ export class TasksService {
       records: recordMap,
       holidays
     };
+  }
+
+  async getOvertimeLedger(userId: number, year: number, month: number) {
+    const { start, end } = this.getMonthRange(year, month);
+    const records = await this.getOvertimeRecords(userId, end);
+    const days: Record<string, any> = {};
+    const entries: OvertimeEntry[] = [];
+    let monthOvertime = 0;
+    let monthLeave = 0;
+
+    for (const record of records) {
+      const entry = this.toOvertimeEntry(record);
+      if (!entry) continue;
+      entries.push(entry);
+
+      if (entry.date < start.format('YYYY-MM-DD') || entry.date > end.format('YYYY-MM-DD')) continue;
+      if (!days[entry.date]) days[entry.date] = {};
+      if (entry.type === 'overtime') {
+        monthOvertime += entry.hours;
+        days[entry.date].overtime = { id: record.id, ...entry };
+      } else if (entry.type === 'leave') {
+        monthLeave += entry.hours;
+        days[entry.date].leave = { id: record.id, ...entry };
+      }
+    }
+
+    return {
+      year,
+      month,
+      days,
+      monthOvertime: this.roundHours(monthOvertime),
+      monthLeave: this.roundHours(monthLeave),
+      monthNet: this.roundHours(monthOvertime - monthLeave),
+      balance: calculateOvertimeBalance(entries)
+    };
+  }
+
+  async saveOvertimeRecord(userId: number, body: any) {
+    const type = body?.type;
+    if (type !== 'overtime' && type !== 'leave') {
+      throw new BadRequestException('记录类型必须是加班或请假');
+    }
+
+    let previousRecord: TaskRecord | null = null;
+    if (body?.id !== undefined && body?.id !== null && body?.id !== '') {
+      const previousId = Number(body.id);
+      if (!Number.isInteger(previousId) || previousId <= 0) {
+        throw new BadRequestException('记录 ID 无效');
+      }
+      previousRecord = await this.taskRecordRepository.findOne({
+        where: { id: previousId, userId, toolKey: 'overtime' }
+      });
+      const previousEntry = previousRecord && this.toOvertimeEntry(previousRecord);
+      if (!previousRecord || !previousEntry || previousEntry.type === 'balance') {
+        throw new NotFoundException('加班记录不存在');
+      }
+    }
+
+    const date = this.parseLedgerDate(body?.date);
+    const hours = this.parseLedgerHours(body?.hours);
+    const startTime = this.parseLedgerTime(body?.startTime);
+    const endTime = this.parseLedgerTime(body?.endTime);
+    if (type === 'overtime' && !!startTime !== !!endTime) {
+      throw new BadRequestException('开始时间和结束时间必须同时填写');
+    }
+    const id = await this.saveOvertimeEntry(userId, {
+      type,
+      date: date.format('YYYY-MM-DD'),
+      hours,
+      ...(type === 'overtime' && startTime ? { startTime, endTime } : {})
+    });
+
+    if (previousRecord && previousRecord.id !== id) {
+      await this.taskRecordRepository.remove(previousRecord);
+    }
+
+    return { success: true, id, date: date.format('YYYY-MM-DD'), type, hours };
+  }
+
+  async deleteOvertimeRecord(userId: number, idValue: string) {
+    const id = Number(idValue);
+    if (!Number.isInteger(id) || id <= 0) throw new BadRequestException('记录 ID 无效');
+
+    const record = await this.taskRecordRepository.findOne({
+      where: { id, userId, toolKey: 'overtime' }
+    });
+    if (!record) throw new NotFoundException('加班记录不存在');
+
+    await this.taskRecordRepository.remove(record);
+    return { success: true, id };
+  }
+
+  async importOvertimeLedger(userId: number, content: string) {
+    let entries: OvertimeEntry[];
+    try {
+      entries = parseOvertimeText(content);
+    } catch (error) {
+      throw new BadRequestException(error instanceof Error ? error.message : '账本内容无效');
+    }
+
+    for (const entry of entries) {
+      this.parseLedgerDate(entry.date);
+    }
+
+    let imported = 0;
+    for (const entry of entries) {
+      await this.saveOvertimeEntry(userId, entry);
+      imported++;
+    }
+    return { success: true, imported };
+  }
+
+  async exportOvertimeLedger(userId: number, year: number, month: number) {
+    const { end } = this.getMonthRange(year, month);
+    const records = await this.getOvertimeRecords(userId, end);
+    const entries = records
+      .map(record => this.toOvertimeEntry(record))
+      .filter((entry): entry is OvertimeEntry => !!entry);
+
+    return {
+      filename: `加班统计-${year}年${month}月.txt`,
+      content: formatOvertimeText(entries, year, month)
+    };
+  }
+
+  private getMonthRange(year: number, month: number) {
+    if (!Number.isInteger(year) || !Number.isInteger(month) || month < 1 || month > 12) {
+      throw new BadRequestException('年月参数无效');
+    }
+    const start = dayjs(new Date(year, month - 1, 1)).startOf('month');
+    return { start, end: start.endOf('month') };
+  }
+
+  private async getOvertimeRecords(userId: number, end: dayjs.Dayjs) {
+    return this.taskRecordRepository.find({
+      where: {
+        userId,
+        toolKey: 'overtime',
+        createdAt: LessThanOrEqual(end.toDate())
+      },
+      order: { createdAt: 'ASC' }
+    });
+  }
+
+  private toOvertimeEntry(record: TaskRecord): OvertimeEntry | null {
+    let data: any;
+    try {
+      data = record.taskData ? JSON.parse(record.taskData) : {};
+    } catch {
+      return null;
+    }
+
+    if (data.type !== 'overtime' && data.type !== 'leave' && data.type !== 'balance') return null;
+    const date = typeof data.date === 'string'
+      ? data.date
+      : dayjs(record.createdAt).format('YYYY-MM-DD');
+    const hours = Number(data.hours);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(hours) || hours <= 0) return null;
+
+    return {
+      type: data.type,
+      date,
+      hours: this.roundHours(hours),
+      ...(typeof data.startTime === 'string' ? { startTime: data.startTime } : {}),
+      ...(typeof data.endTime === 'string' ? { endTime: data.endTime } : {})
+    };
+  }
+
+  private async saveOvertimeEntry(userId: number, entry: OvertimeEntry) {
+    const date = this.parseLedgerDate(entry.date);
+    const records = await this.taskRecordRepository.find({
+      where: {
+        userId,
+        toolKey: 'overtime',
+        createdAt: Between(date.startOf('day').toDate(), date.endOf('day').toDate())
+      }
+    });
+    const existing = records.find(record => this.toOvertimeEntry(record)?.type === entry.type);
+    const taskData = JSON.stringify(entry);
+    const task = existing || this.taskRecordRepository.create({
+      userId,
+      toolKey: 'overtime',
+      createdAt: date.hour(12).minute(0).second(0).millisecond(0).toDate()
+    });
+    task.taskData = taskData;
+    if (existing) task.createdAt = date.hour(12).minute(0).second(0).millisecond(0).toDate();
+    const saved = await this.taskRecordRepository.save(task);
+    return saved?.id || task.id;
+  }
+
+  private parseLedgerDate(value: unknown) {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      throw new BadRequestException('日期格式必须是 YYYY-MM-DD');
+    }
+    const date = dayjs(value);
+    if (!date.isValid() || date.format('YYYY-MM-DD') !== value || date.isAfter(dayjs(), 'day')) {
+      throw new BadRequestException('只能记录今天或过去日期');
+    }
+    return date;
+  }
+
+  private parseLedgerHours(value: unknown) {
+    const hours = Number(value);
+    if (!Number.isFinite(hours) || hours <= 0 || hours > 24) {
+      throw new BadRequestException('小时数必须在 0 到 24 之间');
+    }
+    return this.roundHours(hours);
+  }
+
+  private parseLedgerTime(value: unknown) {
+    if (value === undefined || value === null || value === '') return undefined;
+    if (typeof value !== 'string' || !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value)) {
+      throw new BadRequestException('时间格式必须是 HH:mm');
+    }
+    return value;
+  }
+
+  private roundHours(hours: number) {
+    return Math.round(hours * 100) / 100;
+  }
+
+  async supplementDailyReport(userId: number, toolKey: string, date: string) {
+    const targetDate = dayjs(date);
+    if (
+      toolKey !== 'daily-report' ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
+      !targetDate.isValid() ||
+      targetDate.format('YYYY-MM-DD') !== date ||
+      !targetDate.isBefore(dayjs(), 'day')
+    ) {
+      throw new BadRequestException('只能补签过去的日报缺卡日期');
+    }
+
+    if (!(await this.checkIsWorkday(targetDate))) {
+      throw new BadRequestException('休息日无需补签');
+    }
+
+    const existingRecord = await this.taskRecordRepository.findOne({
+      where: {
+        userId,
+        toolKey,
+        createdAt: Between(targetDate.startOf('day').toDate(), targetDate.endOf('day').toDate())
+      }
+    });
+    if (existingRecord) {
+      throw new ConflictException('该日期已有打卡记录');
+    }
+
+    const task = this.taskRecordRepository.create({
+      userId,
+      toolKey,
+      taskData: JSON.stringify({ type: 'supplement', note: '补签日报' }),
+      createdAt: targetDate.hour(12).minute(0).second(0).millisecond(0).toDate()
+    });
+    await this.taskRecordRepository.save(task);
+
+    return { success: true, id: task.id, date };
   }
 }

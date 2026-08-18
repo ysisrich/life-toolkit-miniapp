@@ -26,6 +26,13 @@ Page({
         path: '/pages/tools/daily-report/index'
       },
       {
+        id: 'overtime',
+        name: '加班统计',
+        icon: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/><path d="M7 3l-2 2M17 3l2 2"/></svg>',
+        gradient: 'linear-gradient(135deg, rgba(48, 209, 88, 0.6) 0%, #000 100%)',
+        path: '/pages/tools/overtime/index'
+      },
+      {
         id: 'haircut',
         name: '去理发',
         icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik02LDE4QzQuOSwxOCA0LDE4LjkgNCwyMEM0LDIxLjEgNC45LDIyIDYsMjJDNy4xLDIyIDgsMjEuMSA4LDIwQzgsMTkuNzggNy45NiwxOS41NyA3Ljg5LDE5LjM4TDEwLjk3LDE2LjNDMTEuMzYsMTYuNDIgMTEuNzgsMTYuNDIgMTIuMTYsMTYuM0wxNS4xMSwxOS4zOEMxNS4wNCwxOS41NyAxNSwxOS43OCAxNSwyMEMxNSwyMS4xIDE1LjksMjIgMTcsMjJDMTguMSwyMiAxOSwyMS4xIDE5LDIwQzE5LDE4LjkgMTguMSwxOCAxNywxOEMxNS45LDE4IDE1LDE4LjkgMTUsMjBDMTUsMjAuMjIgMTUuMDQsMjAuNDMgMTUuMTEsMjAuNjJMMTIuMTYsMTcuN0MxMS43OCwxNy44MiAxMS4zNiwxNy44MiAxMC45NywxNy43TDcuODksMjAuNjJDNy45NiwyMC40MyA4LDIwLjIyIDgsMjBDOCwxOC45IDcuMSwxOCA2LDE4TTYsMTZDNy4xLDE2IDgsMTUuMSA4LDE0QzgsMTMuNzggNy45NiwxMy41NyA3Ljg5LDEzLjM4TDEyLDkuMjdMMTYuMTEsMTMuMzhDMTYuMDQsMTMuNTcgMTYsMTMuNzggMTYsMTRDMTYsMTUuMSAxNi45LDE2IDE4LDE2QzE5LjEsMTYgMjAsMTUuMSAyMCwxNEMyMCwxMi45IDE5LjEsMTIgMTgsMTJDMTYuOSwxMiAxNiwxMi45IDE2LDE0QzE2LDE0LjIyIDE2LjA0LDE0LjQzIDE2LjExLDE0LjYyTDEyLDEwLjUxTDcuODksMTQuNjJDNy45NiwxNC40MyA4LDE0LjIyIDgsMTRDOCwxMi45IDcuMSwxMiA2LDEyQzQuOSwxMiA0LDEyLjkgNCwxNEM0LDE1LjEgNC45LDE2IDYsMTZNMTIsOC41QzEyLjM4LDguNSAxMi43NSw4LjM1IDEzLjA2LDguMDRDMTMuNjUsNy40NSAxMy42NSw2LjUgMTMuMDYsNS45MUw5LjE3LDJINy4wNUwxMiw2Ljk1QzEyLDYuOTUgMTIsOC41IDEyLDguNU0xMiw4LjVDMTEuNjIsOC41IDExLjI1LDguMzUgMTAuOTQsOC4wNEMxMC4zNSw3LjQ1IDEwLjM1LDYuNSAxMC45NCw1LjkxTDE0LjgzLDJIMTYuOTVMMTIsNi45NUMxMiw2Ljk1IDEyLDguNSAxMiw4LjVaIi8+PC9zdmc+',

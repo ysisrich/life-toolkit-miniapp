@@ -28,9 +28,12 @@
       </view>
       <view class="calendar-grid">
         <view 
-          class="calendar-cell {{item.empty ? 'empty' : ''}} {{item.isRecord && !item.isLeave ? 'is-record' : ''}} {{item.isLeave ? 'is-leave' : ''}} {{item.isMiss ? 'is-miss' : ''}} {{item.isWeekend ? 'is-weekend' : ''}} {{item.holidayInfo && item.holidayInfo.holiday ? 'is-holiday' : ''}} {{item.holidayInfo && !item.holidayInfo.holiday ? 'is-workday' : ''}}" 
+          class="calendar-cell {{item.empty ? 'empty' : ''}} {{item.isRecord && !item.isLeave ? 'is-record' : ''}} {{item.isSupplement ? 'is-supplement' : ''}} {{item.isLeave ? 'is-leave' : ''}} {{item.isMiss ? 'is-miss' : ''}} {{item.isWeekend ? 'is-weekend' : ''}} {{item.holidayInfo && item.holidayInfo.holiday ? 'is-holiday' : ''}} {{item.holidayInfo && !item.holidayInfo.holiday ? 'is-workday' : ''}}"
           wx:for="{{calendarDays}}" 
           wx:key="index"
+          data-date="{{item.dateStr}}"
+          bindtap="supplementReport"
+          hover-class="{{item.isMiss ? 'calendar-cell-active' : 'none'}}"
         >
           <text wx:if="{{!item.empty}}" class="day-num">{{item.day}}</text>
           
@@ -41,9 +44,10 @@
           <!-- 节假日名称 -->
           <text wx:if="{{item.holidayInfo && item.holidayInfo.holiday}}" class="holiday-name">{{item.holidayInfo.name}}</text>
 
-          <view wx:if="{{item.isRecord && !item.isLeave}}" class="record-dot"></view>
+          <view wx:if="{{item.isRecord && !item.isLeave && !item.isSupplement}}" class="record-dot"></view>
+          <text wx:if="{{item.isSupplement}}" class="supplement-text">补</text>
           <text wx:if="{{item.isLeave}}" class="leave-text">假</text>
-          <text wx:if="{{item.isMiss}}" class="miss-text">漏</text>
+          <text wx:if="{{item.isMiss}}" class="miss-text">补</text>
         </view>
       </view>
     </view>
